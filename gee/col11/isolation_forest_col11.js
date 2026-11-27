@@ -26,6 +26,8 @@
  *     i.e. 78 tasks for 1986-2024. Start them from the Tasks tab.
  *     The folder/ImageCollection of the maps is created by the script on load
  *     (needs write access to the project); re-running is safe.
+ *   - Re-running skips tasks already PENDING/RUNNING with the same name and map
+ *     assets that already exist (list printed in the Console).
  *   - Tip: test with years: [2022] first.
  *
  * TABLE (Drive CSV, one per year): year, territory (biome*100 + LULC class),
@@ -200,9 +202,25 @@ if (CONFIG.exportImages) {
   }
 }
 
+// Skip exports already queued/running (same task name) or whose asset already exists.
+var activeTasks = {};
+try {
+  (ee.data.listOperations() || []).forEach(function (op) {
+    var m = op.metadata || {};
+    if (['PENDING', 'READY', 'RUNNING', 'CANCELLING'].indexOf(m.state) >= 0 && m.description) {
+      activeTasks[m.description] = m.state;
+    }
+  });
+} catch (e) { print('Could not list tasks (no skipping by name):', e); }
+var skipped = [];
+var isActive = function (name) {
+  if (activeTasks[name]) { skipped.push(name + ' [' + activeTasks[name] + ']'); return true; }
+  return false;
+};
+
 CONFIG.years.forEach(function (year) {
   var out = processYear(year);
-  if (CONFIG.exportTables) {
+  if (CONFIG.exportTables && !isActive('isolation_forest_col11_' + year)) {
     Export.table.toDrive({
       collection: out.rows,
       description: 'isolation_forest_col11_' + year,
@@ -211,8 +229,12 @@ CONFIG.years.forEach(function (year) {
       selectors: ['year', 'territory', 'source_ha', 'target_ha', 'dist_class', 'area_ha']
     });
   }
-  if (CONFIG.exportImages) {
-    var name = CONFIG.imagePrefix + year + '_v' + CONFIG.version;
+  var name = CONFIG.imagePrefix + year + '_v' + CONFIG.version;
+  if (CONFIG.exportImages && !isActive(name)) {
+    if (assetExists(CONFIG.imageCollection + '/' + name)) {
+      skipped.push(name + ' [asset exists]');
+      return;
+    }
     Export.image.toAsset({
       image: out.image,
       description: name,
@@ -225,6 +247,7 @@ CONFIG.years.forEach(function (year) {
     });
   }
 });
+print('Skipped ' + skipped.length + ' export(s) (already running or done):', skipped);
 
 // Quick visual check for one year (no export)
 var y = 2022;
