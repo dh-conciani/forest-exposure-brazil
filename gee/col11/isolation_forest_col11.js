@@ -204,14 +204,27 @@ if (CONFIG.exportImages) {
 
 // Skip exports already queued/running (same task name) or whose asset already exists.
 var activeTasks = {};
+var ACTIVE = ['PENDING', 'READY', 'RUNNING', 'CANCEL_REQUESTED', 'CANCELLING'];
+var addTask = function (desc, state) {
+  if (desc && ACTIVE.indexOf(String(state).toUpperCase()) >= 0) activeTasks[desc] = state;
+};
+// 1) Cloud API operations (all pages); description/state live in op.metadata
 try {
-  (ee.data.listOperations() || []).forEach(function (op) {
-    var m = op.metadata || {};
-    if (['PENDING', 'READY', 'RUNNING', 'CANCELLING'].indexOf(m.state) >= 0 && m.description) {
-      activeTasks[m.description] = m.state;
-    }
+  var ops = ee.data.listOperations(10000) || [];
+  if (ops.operations) ops = ops.operations;
+  ops.forEach(function (op) {
+    var m = op.metadata || op;
+    addTask(m.description, m.state);
   });
-} catch (e) { print('Could not list tasks (no skipping by name):', e); }
+} catch (e) { print('listOperations failed:', String(e)); }
+// 2) legacy task list (fallback; same tasks shown in the Tasks tab)
+try {
+  var tl = ee.data.getTaskList();
+  (tl && tl.tasks ? tl.tasks : (tl || [])).forEach(function (t) {
+    addTask(t.description, t.state);
+  });
+} catch (e) { print('getTaskList failed:', String(e)); }
+print('Active tasks found (queued/running):', Object.keys(activeTasks).length);
 var skipped = [];
 var isActive = function (name) {
   if (activeTasks[name]) { skipped.push(name + ' [' + activeTasks[name] + ']'); return true; }
