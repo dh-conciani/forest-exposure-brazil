@@ -56,7 +56,7 @@ The pipeline runs on two data versions, kept side by side (`data/derived/<collec
 | `DEG_COLLECTION` | Source | Period | Notes |
 |---|---|---|---|
 | `col9` (default) | GEE exports used in the submitted manuscript (LULC Col. 9) | 1986–2022 | reproduces the submitted numbers |
-| `col11` | MapBiomas Degradation Module tables `11.1a` (`data/raw/col11/*.xlsx`) | 1986–2024 (39 annual maps) | patch size in true area (GRASS); edge age available; isolation from `gee/col11/isolation_forest_col11.js` |
+| `col11` | MapBiomas Degradation Module tables `11.1a` (`data/raw/col11/*.xlsx`) | 1986–2024 (39 annual maps) | patch size in true area (GRASS); edge age available; isolation from the Colab pipeline `gee/col11/isolation_pipeline/` |
 
 ```bash
 DEG_COLLECTION=col9  Rscript run_all.R
