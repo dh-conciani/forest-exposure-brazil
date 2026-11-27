@@ -1,0 +1,29 @@
+driver,biome,col9_1986,col9_2022,col11_1986,col11_2022,col11_2024,diff_2022_pp
+Edge area,Brazil,9.84,14.32,8.8,13.94,14.19,-0.38
+Edge area,Amazon,2.9,6.53,2.29,6.01,6.11,-0.52
+Edge area,Caatinga,16.51,17.43,11.45,15.66,17.52,-1.77
+Edge area,Cerrado,32.38,43.57,24.22,40.4,41.81,-3.17
+Edge area,Atlantic Forest,65.52,68.96,62.19,65.51,65.78,-3.45
+Edge area,Pampa,44.1,59.44,39.39,55.82,56.58,-3.62
+Edge area,Pantanal,8.46,11.65,2.33,9.58,9.88,-2.07
+Small-sized patches,Brazil,1.68,2.58,1.42,2.49,2.53,-0.1
+Small-sized patches,Amazon,0.14,0.75,0.13,0.69,0.69,-0.05
+Small-sized patches,Caatinga,0.97,1.15,1.04,1.6,1.91,0.45
+Small-sized patches,Cerrado,4.9,6.94,3.24,7.13,7.4,0.18
+Small-sized patches,Atlantic Forest,16.7,18.86,14.25,16.52,16.72,-2.34
+Small-sized patches,Pampa,4.69,8.13,4.26,8.2,8.6,0.07
+Small-sized patches,Pantanal,0.33,1.05,0.04,0.75,0.76,-0.3
+Habitat isolation,Brazil,1.23,2.12,NA,NA,NA,NA
+Habitat isolation,Amazon,0.01,0.26,NA,NA,NA,NA
+Habitat isolation,Caatinga,0.58,0.9,NA,NA,NA,NA
+Habitat isolation,Cerrado,4.98,9.92,NA,NA,NA,NA
+Habitat isolation,Atlantic Forest,11.69,15,NA,NA,NA,NA
+Habitat isolation,Pampa,6.35,9,NA,NA,NA,NA
+Habitat isolation,Pantanal,0.02,0.57,NA,NA,NA,NA
+Fire frequency,Brazil,0.55,6.29,0.73,7.25,8.19,0.96
+Fire frequency,Amazon,0.42,5.12,0.47,5.29,6.33,0.17
+Fire frequency,Caatinga,0.25,5.9,0.11,5.59,5.95,-0.32
+Fire frequency,Cerrado,1.87,21.45,2.96,26.46,27.17,5.01
+Fire frequency,Atlantic Forest,0.5,2.84,0.41,2.61,2.83,-0.23
+Fire frequency,Pampa,0.26,1.43,0.26,1.55,1.64,0.12
+Fire frequency,Pantanal,1.38,29.37,1.62,29.07,33.55,-0.3
