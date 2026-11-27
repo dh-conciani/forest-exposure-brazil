@@ -26,11 +26,11 @@ trends <- exposure |>
       tau = pct$tau, p_value = pct$p_value,
       sen_pp_per_yr = pct$sen_slope,
       sen_ha_per_yr = abs$sen_slope,
-      pct_1986 = y0$pct_exposed, pct_2022 = y1$pct_exposed,
+      pct_start = y0$pct_exposed, pct_end = y1$pct_exposed,
       delta_pp = y1$pct_exposed - y0$pct_exposed,
       rel_change_pct = ifelse(y0$pct_exposed > 0,
                               100 * (y1$pct_exposed - y0$pct_exposed) / y0$pct_exposed, NA_real_),
-      area_1986_ha = y0$area_exposed_ha, area_2022_ha = y1$area_exposed_ha,
+      area_start_ha = y0$area_exposed_ha, area_end_ha = y1$area_exposed_ha,
       delta_area_ha = y1$area_exposed_ha - y0$area_exposed_ha)
   }) |>
   ungroup() |>

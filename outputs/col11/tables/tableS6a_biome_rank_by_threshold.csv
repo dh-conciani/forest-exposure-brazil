@@ -1,0 +1,139 @@
+driver,threshold,biome,pct_exposed,rank
+Edge area,30,Amazon,1.7970713093399855,6
+Edge area,60,Amazon,2.9608694745861457,6
+Edge area,90,Amazon,3.9948301217224857,6
+Edge area,120,Amazon,5.281140230315818,6
+Edge area,150,Amazon,6.105301215808795,6
+Edge area,300,Amazon,9.820104755705133,6
+Edge area,600,Amazon,14.8570430515958,6
+Edge area,1000,Amazon,19.44630016897789,6
+Edge area,30,Caatinga,4.9780415823949244,4
+Edge area,60,Caatinga,8.186423782573325,4
+Edge area,90,Caatinga,11.139716552979197,4
+Edge area,120,Caatinga,14.992892385283712,4
+Edge area,150,Caatinga,17.524265736603077,4
+Edge area,300,Caatinga,29.289074761378973,4
+Edge area,600,Caatinga,44.879822740315575,4
+Edge area,1000,Caatinga,57.27515853755889,4
+Edge area,30,Cerrado,15.752960906905017,3
+Edge area,60,Cerrado,23.96306073241617,3
+Edge area,90,Cerrado,30.39222922575299,3
+Edge area,120,Cerrado,37.62911957951968,3
+Edge area,150,Cerrado,41.81065982779788,3
+Edge area,300,Cerrado,57.58547770170341,3
+Edge area,600,Cerrado,73.03617583231602,3
+Edge area,1000,Cerrado,82.8078141758034,3
+Edge area,30,Atlantic Forest,28.491018540843907,1
+Edge area,60,Atlantic Forest,41.89119309942722,1
+Edge area,90,Atlantic Forest,51.37381233479943,1
+Edge area,120,Atlantic Forest,60.889442398757225,1
+Edge area,150,Atlantic Forest,65.78277615832282,1
+Edge area,300,Atlantic Forest,80.44176282467421,1
+Edge area,600,Atlantic Forest,89.82191884564016,1
+Edge area,1000,Atlantic Forest,94.01712763372488,1
+Edge area,30,Pampa,22.79427185593435,2
+Edge area,60,Pampa,34.816027263049,2
+Edge area,90,Pampa,43.37261229906056,2
+Edge area,120,Pampa,52.00067119834903,2
+Edge area,150,Pampa,56.57843945300372,2
+Edge area,300,Pampa,71.93719162366742,2
+Edge area,600,Pampa,84.91421576113726,2
+Edge area,1000,Pampa,92.1423566308844,2
+Edge area,30,Pantanal,2.2795562141077013,5
+Edge area,60,Pantanal,4.244060902307371,5
+Edge area,90,Pantanal,6.0576905410119215,5
+Edge area,120,Pantanal,8.366277827750718,5
+Edge area,150,Pantanal,9.884403475570076,5
+Edge area,300,Pantanal,17.139950133752514,5
+Edge area,600,Pantanal,28.262005644646536,5
+Edge area,1000,Pantanal,39.28083220789758,5
+Small-sized patches,5,Amazon,0.14215213478453512,6
+Small-sized patches,10,Amazon,0.2492974598688256,6
+Small-sized patches,25,Amazon,0.4631460231013233,6
+Small-sized patches,50,Amazon,0.6869434109669872,6
+Small-sized patches,100,Amazon,0.968132593361086,6
+Small-sized patches,5,Caatinga,0.5069781214179949,4
+Small-sized patches,10,Caatinga,0.8002863482853791,4
+Small-sized patches,25,Caatinga,1.3629595048164067,4
+Small-sized patches,50,Caatinga,1.907982886501713,4
+Small-sized patches,100,Caatinga,2.558182622211697,4
+Small-sized patches,5,Cerrado,2.0456603661821497,3
+Small-sized patches,10,Cerrado,3.1736962879349564,3
+Small-sized patches,25,Cerrado,5.303242176073299,3
+Small-sized patches,50,Cerrado,7.402658429903094,3
+Small-sized patches,100,Cerrado,9.84792062763816,3
+Small-sized patches,5,Atlantic Forest,4.844115382415479,1
+Small-sized patches,10,Atlantic Forest,7.506135749103432,1
+Small-sized patches,25,Atlantic Forest,12.28990301754355,1
+Small-sized patches,50,Atlantic Forest,16.715754864751204,1
+Small-sized patches,100,Atlantic Forest,21.486434835065513,1
+Small-sized patches,5,Pampa,2.71032141089579,2
+Small-sized patches,10,Pampa,4.09953994278867,2
+Small-sized patches,25,Pampa,6.5167714458396055,2
+Small-sized patches,50,Pampa,8.599082763015913,2
+Small-sized patches,100,Pampa,10.60638411688957,2
+Small-sized patches,5,Pantanal,0.21895561779726155,5
+Small-sized patches,10,Pantanal,0.34076275203367457,5
+Small-sized patches,25,Pantanal,0.5448935479364538,5
+Small-sized patches,50,Pantanal,0.7611177625614556,5
+Small-sized patches,100,Pantanal,1.01090539624266,5
+Fire frequency,1,Amazon,6.33464393218883,3
+Fire frequency,2,Amazon,2.5797727266040127,3
+Fire frequency,3,Amazon,1.2598897192798184,3
+Fire frequency,4,Amazon,0.6446214272835821,3
+Fire frequency,5,Amazon,0.3410092883428148,3
+Fire frequency,6,Amazon,0.1893893908448449,3
+Fire frequency,7,Amazon,0.10976514701214916,3
+Fire frequency,8,Amazon,0.06601390664090032,3
+Fire frequency,9,Amazon,0.04080897319655596,3
+Fire frequency,10,Amazon,0.02572807655401733,3
+Fire frequency,1,Caatinga,5.945993523591073,4
+Fire frequency,2,Caatinga,2.0559990972906728,4
+Fire frequency,3,Caatinga,0.9158920623373752,4
+Fire frequency,4,Caatinga,0.48611028036073184,4
+Fire frequency,5,Caatinga,0.25827624504093144,4
+Fire frequency,6,Caatinga,0.15902646178207974,4
+Fire frequency,7,Caatinga,0.07897405120237927,4
+Fire frequency,8,Caatinga,0.0316504616063587,4
+Fire frequency,9,Caatinga,0.00994154050738958,4
+Fire frequency,10,Caatinga,9.320184898170048e-4,5
+Fire frequency,1,Cerrado,27.166669330089483,2
+Fire frequency,2,Cerrado,14.673119670406413,2
+Fire frequency,3,Cerrado,9.161186468703088,1
+Fire frequency,4,Cerrado,6.158277975359009,1
+Fire frequency,5,Cerrado,4.288726691049642,1
+Fire frequency,6,Cerrado,3.0409133145053935,1
+Fire frequency,7,Cerrado,2.176607318478336,1
+Fire frequency,8,Cerrado,1.5659403540548404,1
+Fire frequency,9,Cerrado,1.1295377619049076,1
+Fire frequency,10,Cerrado,0.8154104104188173,1
+Fire frequency,1,Atlantic Forest,2.8293942981250977,5
+Fire frequency,2,Atlantic Forest,0.7171211217189607,5
+Fire frequency,3,Atlantic Forest,0.26806831382150487,5
+Fire frequency,4,Atlantic Forest,0.11773660809123128,5
+Fire frequency,5,Atlantic Forest,0.05455983967503879,5
+Fire frequency,6,Atlantic Forest,0.02599939131860285,5
+Fire frequency,7,Atlantic Forest,0.01222915621305566,5
+Fire frequency,8,Atlantic Forest,0.00609226023518371,5
+Fire frequency,9,Atlantic Forest,0.00331992358032418,5
+Fire frequency,10,Atlantic Forest,0.00190914195636016,4
+Fire frequency,1,Pampa,1.6424351618647046,6
+Fire frequency,2,Pampa,0.2968089775033813,6
+Fire frequency,3,Pampa,0.08147553742787134,6
+Fire frequency,4,Pampa,0.02605079096062872,6
+Fire frequency,5,Pampa,0.00867584801005844,6
+Fire frequency,6,Pampa,0.00357888157581755,6
+Fire frequency,7,Pampa,0.00159587031392153,6
+Fire frequency,8,Pampa,8.19356191130188e-4,6
+Fire frequency,9,Pampa,4.3556683320211806e-4,6
+Fire frequency,10,Pampa,2.305380310890444e-4,6
+Fire frequency,1,Pantanal,33.54875186473446,1
+Fire frequency,2,Pantanal,16.22176645226167,1
+Fire frequency,3,Pantanal,7.800158434855522,2
+Fire frequency,4,Pantanal,3.7925222185422616,2
+Fire frequency,5,Pantanal,1.86222499423914,2
+Fire frequency,6,Pantanal,1.0102934037249285,2
+Fire frequency,7,Pantanal,0.5781192618748129,2
+Fire frequency,8,Pantanal,0.33498802823902424,2
+Fire frequency,9,Pantanal,0.18999137356010248,2
+Fire frequency,10,Pantanal,0.11240691708446908,2

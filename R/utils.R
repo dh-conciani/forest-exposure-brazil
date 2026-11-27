@@ -20,27 +20,51 @@ options(scipen = 999, dplyr.summarise.inform = FALSE)
 
 # ---- Paths ------------------------------------------------------------------
 path_raw     <- function(...) here::here("data", "raw", ...)
-path_derived <- function(...) here::here("data", "derived", ...)
-path_fig     <- function(...) here::here("outputs", "figures", ...)
-path_tab     <- function(...) here::here("outputs", "tables", ...)
+# derived data and outputs are kept separate per collection
+path_derived <- function(...) { d <- here::here("data", "derived", Sys.getenv("DEG_COLLECTION", "col9")); dir.create(d, FALSE, TRUE); file.path(d, ...) }
+path_fig     <- function(...) { d <- here::here("outputs", Sys.getenv("DEG_COLLECTION", "col9"), "figures"); dir.create(d, FALSE, TRUE); file.path(d, ...) }
+path_tab     <- function(...) { d <- here::here("outputs", Sys.getenv("DEG_COLLECTION", "col9"), "tables"); dir.create(d, FALSE, TRUE); file.path(d, ...) }
 
 # ---- Study configuration ------------------------------------------------------
-# Period analysed in the manuscript. 1986-2022 = 37 annual maps (R2 comment 1.7).
-CFG <- list(
-  year_start = 1986,
-  year_end   = 2022,
-  # MapBiomas Collection 9 level_2 labels treated as forest (GEE remap 3, 5, 6, 49).
+# Which data collection to run. Set before sourcing, e.g.
+#   Sys.setenv(DEG_COLLECTION = "col11"); source("run_all.R")
+# or from a terminal: DEG_COLLECTION=col11 Rscript run_all.R
+#   col9  : tables used in the submitted manuscript (LULC Col. 9), 1986-2022
+#   col11 : MapBiomas Degradation Module tables "11.1a", analysed 1986-2024
+COLLECTION <- Sys.getenv("DEG_COLLECTION", "col9")
+stopifnot(COLLECTION %in% c("col9", "col11"))
+
+CFG_BY_COLLECTION <- list(
+  col9 = list(
+    year_start = 1986, year_end = 2022,
+    edge_thresholds  = c(30, 60, 90, 120, 150, 300, 600, 1000),
+    patch_thresholds = c(3, 5, 10, 25, 50, 75),
+    fire_theme = "recurrence"),
+  col11 = list(
+    # 1986-2024 (39 annual maps; 2025 is in the tables but left out by the authors'
+    # decision, 27 Nov 2026 - consistent with LULC Col. 10.1/Fire 4.1 period of ATBD v2)
+    year_start = 1986, year_end = 2024,
+    # edges up to 5 km exist in the tables; the paper keeps 30-1000 m (R2 5.2)
+    edge_thresholds  = c(30, 60, 90, 120, 150, 300, 600, 1000),
+    # small patches harmonized up to 100 ha = target size of the isolation metric (R2 5.4)
+    patch_thresholds = c(5, 10, 25, 50, 100),
+    fire_theme = "fireFrequency")
+)
+
+CFG <- c(CFG_BY_COLLECTION[[COLLECTION]], list(
+  collection = COLLECTION,
+  # MapBiomas level_2 labels treated as forest (GEE remap 3, 5, 6, 49).
   # NOTE: "Magrove" is the spelling used in the exported tables; keep it.
   forest_classes = c("Forest Formation", "Magrove", "Flooded Forest", "Wooded Restinga"),
   # Literature-based scenario used for PCA, correlations and the forest-type ranking
   scenario = list(edge = 150, patch = 50, isolation = 5, fire = 1),
-  # Isolation parameters fixed in the submitted analysis (source >= 1000 ha,
-  # target patches <= 100 ha). Other combinations are used in sensitivity tests.
+  # Isolation parameters of the main analysis (source >= 1000 ha, target <= 100 ha).
+  # Other combinations are used in sensitivity tests.
   isolation_source_ha = 1000,
   isolation_target_ha = 100,
   biome_order = c("Amazon", "Caatinga", "Cerrado", "Atlantic Forest", "Pampa", "Pantanal"),
   driver_order = c("Edge area", "Small-sized patches", "Habitat isolation", "Fire frequency")
-)
+))
 
 biome_en <- c("Amazônia" = "Amazon", "Caatinga" = "Caatinga", "Cerrado" = "Cerrado",
               "Mata Atlântica" = "Atlantic Forest", "Pampa" = "Pampa", "Pantanal" = "Pantanal")
@@ -60,6 +84,17 @@ read_mb_table <- function(file) {
            year >= CFG$year_start, year <= CFG$year_end)
 }
 
+# Collection 11 tables are distributed by MapBiomas as .xlsx with the same layout
+read_mb_xlsx <- function(file) {
+  readxl::read_xlsx(file) |>
+    mutate(across(-matches("^[0-9]{4}$"), as.character)) |>
+    tidyr::pivot_longer(matches("^[0-9]{4}$"), names_to = "year", values_to = "area_ha") |>
+    mutate(year = as.integer(year), area_ha = as.numeric(area_ha),
+           biome = unname(biome_en[NAME])) |>
+    filter(level_2 %in% CFG$forest_classes,
+           year >= CFG$year_start, year <= CFG$year_end)
+}
+
 # Sum forest classes, split "value" (exposed) and "reference" (all forest) rows,
 # and join them by explicit keys (the submitted scripts attached absolute values
 # by row position, which is fragile).
@@ -74,10 +109,11 @@ exposure_from_long <- function(df, threshold_col, driver_label) {
 }
 
 # Fire: the table holds, for each year, forest area by number of times burned
-# (theme == "recurrence", column `value` = number of fires since 1985).
+# (theme "recurrence" in Col. 9 / "fireFrequency" in Col. 11, column `value` =
+# number of fires since 1985).
 # Exposure at threshold k = forest area burned >= k times.
 exposure_fire <- function(df, k_max = 10) {
-  df <- df |> filter(theme == "recurrence") |> mutate(n_fires = as.integer(value))
+  df <- df |> filter(theme == CFG$fire_theme) |> mutate(n_fires = as.integer(value))
   forest <- df |> filter(key == "reference") |>
     group_by(biome, year) |> summarise(area_forest_ha = sum(area_ha, na.rm = TRUE))
   burned <- df |> filter(key == "value", n_fires >= 1) |>
@@ -88,6 +124,36 @@ exposure_fire <- function(df, k_max = 10) {
     summarise(area_exposed_ha = sum(a[n_fires >= threshold], na.rm = TRUE)) |>
     left_join(forest, by = c("biome", "year")) |>
     mutate(driver = "Fire frequency")
+}
+
+# Isolation for Collection 11 is produced by the Colab pipeline
+# gee/col11/isolation_pipeline/ (stage S5), one CSV per year, WIDE format:
+#   year, territory, ref_ha, uso_t<T>_s<S>_d<D>, ...
+# territory = biome_code * 100 + LULC class (30 m); ref_ha = forest area;
+# uso_* = forest area in target patches <= T px whose nearest source patch
+# (>= S px) is > D km away. Classes are CUMULATIVE in D (> 5 includes > 10, > 20).
+# TODO: confirm the biome codes of 'biomas-raster-41' (Pantanal = 3 in the module scripts);
+# run iso.check_inputs(cfg) in the notebook to list the codes present.
+biome_code <- c(`1` = "Amazon", `2` = "Caatinga", `3` = "Pantanal",
+                `4` = "Cerrado", `5` = "Atlantic Forest", `6` = "Pampa")
+read_isolation_col11 <- function(dir) {
+  files <- list.files(dir, pattern = "\\.csv$", full.names = TRUE)
+  if (length(files) == 0) return(tibble())
+  x <- purrr::map_dfr(files, readr::read_csv, show_col_types = FALSE) |>
+    mutate(biome = unname(biome_code[as.character(territory %/% 100)]),
+           lulc_class = territory %% 100) |>
+    filter(lulc_class %in% c(3, 5, 6, 49), year >= CFG$year_start, year <= CFG$year_end)
+  if (anyNA(x$biome)) stop("Unknown biome code in isolation tables: check `biome_code` in R/utils.R")
+  ref <- x |> group_by(biome, year) |> summarise(area_forest_ha = sum(ref_ha))
+  x |> select(biome, year, starts_with("uso_")) |>
+    tidyr::pivot_longer(starts_with("uso_"), names_to = "combo", values_to = "a") |>
+    tidyr::extract(combo, c("target_ha", "source_ha", "threshold"),
+                   "uso_t(\\d+)_s(\\d+)_d(\\d+)", convert = TRUE) |>
+    group_by(biome, year, source_ha, target_ha, threshold) |>
+    summarise(area_exposed_ha = sum(a, na.rm = TRUE)) |>
+    ungroup() |>
+    left_join(ref, by = c("biome", "year")) |>
+    mutate(driver = "Habitat isolation")
 }
 
 # Brazil = sum of biomes. Kept only for descriptive figures/tables; it is NOT

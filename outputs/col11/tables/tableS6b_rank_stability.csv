@@ -1,0 +1,4 @@
+driver,n_thresholds,kendall_W,top_biome_all_thresholds
+Edge area,8,1,Atlantic Forest
+Fire frequency,10,0.9714285714285714,Cerrado / Pantanal
+Small-sized patches,5,1,Atlantic Forest

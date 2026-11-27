@@ -49,6 +49,23 @@ MapBiomas LULC Col. 9 + Fire Col. 3   ──► driver rasters ──► area ta
 A detailed flowchart with inputs, versions, masks, projections and parameters is in
 [`docs/workflow.md`](docs/workflow.md).
 
+## Data collections
+
+The pipeline runs on two data versions, kept side by side (`data/derived/<collection>/`, `outputs/<collection>/`):
+
+| `DEG_COLLECTION` | Source | Period | Notes |
+|---|---|---|---|
+| `col9` (default) | GEE exports used in the submitted manuscript (LULC Col. 9) | 1986–2022 | reproduces the submitted numbers |
+| `col11` | MapBiomas Degradation Module tables `11.1a` (`data/raw/col11/*.xlsx`) | 1986–2024 (39 annual maps) | patch size in true area (GRASS); edge age available; isolation from the Colab pipeline `gee/col11/isolation_pipeline/` |
+
+```bash
+DEG_COLLECTION=col9  Rscript run_all.R
+DEG_COLLECTION=col11 Rscript run_all.R   # then 10_compare_collections.R writes outputs/comparison/
+```
+
+In Collection 11 the small-patch thresholds are ≤ 5, 10, 25, 50, 100 ha (aligned with the ≤ 100 ha
+isolation targets) and edge distances 30–1000 m are used (tables also hold 2.5 and 5 km).
+
 ## Reproduce
 
 Requirements: R ≥ 4.3 (tested with 4.3.3 on Ubuntu 24.04 and on Windows 11). No GIS software is
@@ -58,7 +75,7 @@ needed for the R part; GEE steps require a Google Earth Engine account.
 # from the repository root (open forest-exposure-brazil.Rproj in RStudio, or setwd())
 install.packages("renv")
 renv::restore()          # installs the exact package versions in renv.lock
-source("run_all.R")      # ~15 s; writes data/derived/, outputs/tables/, outputs/figures/
+source("run_all.R")      # ~20 s; writes data/derived/<collection>/ and outputs/<collection>/
 ```
 
 or from a terminal: `Rscript run_all.R`.
@@ -79,13 +96,16 @@ forest-exposure-brazil/
 ├── data/
 │   ├── raw/biome/          GEE exports by biome (MapBiomas statistics, Col. 9 — "9.0.1a")
 │   ├── raw/ibge_vegetation/ GEE exports by IBGE vegetation type + id lookup
-│   └── derived/            tidy tables produced by 01_prepare_exposure.R
+│   ├── raw/col11/          Degradation Module tables 11.1a (xlsx) + isolation/ (from GEE)
+│   └── derived/<collection>/ tidy tables produced by 01_prepare_exposure.R
 ├── outputs/
-│   ├── figures/            Fig. 1, 3, 4 and supplementary figures (PNG 600 dpi + PDF)
-│   └── tables/             supplementary tables S3–S8 and the text-consistency check
+│   ├── <collection>/figures/ Fig. 1, 3, 4 and supplementary figures (PNG 600 dpi + PDF)
+│   ├── <collection>/tables/  supplementary tables and the text-consistency check
+│   └── comparison/          Collection 9 vs 11 (Table S10)
 ├── gee/
 │   ├── README.md           GEE scripts used, asset ids, parameters, provenance
-│   └── submitted_col9/     JavaScript versions used for the submitted analysis
+│   ├── submitted_col9/     JavaScript versions used for the submitted analysis
+│   └── col11/              Colab isolation pipeline for Collection 11 (+ README)
 └── docs/
     ├── workflow.md          methodological flowchart (R2 comment 4.1)
     ├── gee_new_runs.md      new GEE exports needed for the revision
@@ -105,7 +125,9 @@ forest-exposure-brazil/
 | `figS3_rank_sensitivity`, `tableS6a–c` | Figure S3, Table S6 (new) | 05 |
 | `tableS7_denominator_decomposition` | Table S7 (new) | 06 |
 | `fig4_forest_type_exposure_ranking`, `tableS8a/b` | Box 1 / Figure 4, Table S8 | 07 |
-| `text_numbers_check` | internal QA of values quoted in the text | 08 |
+| `text_numbers_check` | internal QA of values quoted in the text (col9) | 08 |
+| `figS4_edge_age`, `tableS9_edge_age_150m` | Figure S4, Table S9 (col11) | 09 |
+| `comparison/tableS10_col9_vs_col11_scenario` | Table S10 | 10 |
 
 Figure 2 (maps) is produced from the GEE rasters in QGIS; see `gee/README.md`.
 

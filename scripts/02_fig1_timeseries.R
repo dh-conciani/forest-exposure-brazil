@@ -48,7 +48,7 @@ panel <- function(drv, tag) {
           plot.title = element_text(size = 9, face = "bold"))
 }
 
-fig1 <- panel("Edge area", "a") / panel("Small-sized patches", "b") /
-  panel("Habitat isolation", "c") / panel("Fire frequency", "d")
-save_fig(fig1, "fig1_exposure_timeseries", width = 10, height = 9)
+drivers <- intersect(CFG$driver_order, unique(exposure$driver))   # isolation may be missing (col11)
+fig1 <- patchwork::wrap_plots(purrr::map2(drivers, letters[seq_along(drivers)], panel), ncol = 1)
+save_fig(fig1, "fig1_exposure_timeseries", width = 10, height = 2.25 * length(drivers))
 message("02_fig1_timeseries: done.")
