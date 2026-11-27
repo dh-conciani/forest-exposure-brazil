@@ -34,3 +34,12 @@ into `data/raw/col11/isolation/` and run `DEG_COLLECTION=col11 Rscript run_all.R
 1. Confirm the LULC Collection 11 asset id (`Config.lulc_asset`); `check_inputs()` fails if it is wrong.
 2. Send the biome codes printed by `check_inputs()` to update `biome_code` in `R/utils.R`
    (and `Config.pantanal_code`, assumed 3).
+
+## Alternativa em JS (Code Editor): `isolation_forest_col11.js`
+
+Usa o tamanho de fragmento do próprio módulo de degradação
+(`DEGRADATION/COLLECTION-11/area`, ImageCollection com uma imagem por ano,
+`degradation_patch_size_col11_<ano>_v1`, 1 banda em ha) em vez de
+`connectedPixelCount`. Distâncias fixas em 5/10/20 km (`CONFIG.distances`
+precisa ter exatamente 3 valores). O pipeline Python/Colab não depende desse
+asset e já usa 5/10/20 km.
