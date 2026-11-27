@@ -126,11 +126,14 @@ exposure_fire <- function(df, k_max = 10) {
     mutate(driver = "Fire frequency")
 }
 
-# Isolation exported by gee/col11/isolation_forest_col11.js (one CSV per year).
-# territory = biome_code * 100 + LULC class; dist_class is EXCLUSIVE
-# (5 = 5-10 km, 10 = 10-20 km, 20 = >= 20 km; 0 = reference forest area) and is
-# converted here to the CUMULATIVE thresholds used everywhere else (>= 5, 10, 20 km).
-# TODO: confirm the biome codes of 'biomas-raster-41' (Pantanal = 3 in the module scripts).
+# Isolation for Collection 11 is produced by the Colab pipeline
+# gee/col11/isolation_pipeline/ (stage S5), one CSV per year, WIDE format:
+#   year, territory, ref_ha, uso_t<T>_s<S>_d<D>, ...
+# territory = biome_code * 100 + LULC class (30 m); ref_ha = forest area;
+# uso_* = forest area in target patches <= T px whose nearest source patch
+# (>= S px) is > D km away. Classes are CUMULATIVE in D (> 5 includes > 10, > 20).
+# TODO: confirm the biome codes of 'biomas-raster-41' (Pantanal = 3 in the module scripts);
+# run iso.check_inputs(cfg) in the notebook to list the codes present.
 biome_code <- c(`1` = "Amazon", `2` = "Caatinga", `3` = "Pantanal",
                 `4` = "Cerrado", `5` = "Atlantic Forest", `6` = "Pampa")
 read_isolation_col11 <- function(dir) {
@@ -141,12 +144,13 @@ read_isolation_col11 <- function(dir) {
            lulc_class = territory %% 100) |>
     filter(lulc_class %in% c(3, 5, 6, 49), year >= CFG$year_start, year <= CFG$year_end)
   if (anyNA(x$biome)) stop("Unknown biome code in isolation tables: check `biome_code` in R/utils.R")
-  ref <- x |> filter(dist_class == 0) |> group_by(biome, year) |> summarise(area_forest_ha = sum(area_ha))
-  x |> filter(dist_class > 0) |>
-    group_by(biome, year, source_ha, target_ha, dist_class) |> summarise(a = sum(area_ha)) |>
-    ungroup() |> tidyr::crossing(threshold = c(5, 10, 20)) |>
+  ref <- x |> group_by(biome, year) |> summarise(area_forest_ha = sum(ref_ha))
+  x |> select(biome, year, starts_with("uso_")) |>
+    tidyr::pivot_longer(starts_with("uso_"), names_to = "combo", values_to = "a") |>
+    tidyr::extract(combo, c("target_ha", "source_ha", "threshold"),
+                   "uso_t(\\d+)_s(\\d+)_d(\\d+)", convert = TRUE) |>
     group_by(biome, year, source_ha, target_ha, threshold) |>
-    summarise(area_exposed_ha = sum(a[dist_class >= threshold])) |>
+    summarise(area_exposed_ha = sum(a, na.rm = TRUE)) |>
     ungroup() |>
     left_join(ref, by = c("biome", "year")) |>
     mutate(driver = "Habitat isolation")

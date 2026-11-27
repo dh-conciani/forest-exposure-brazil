@@ -6,3 +6,4 @@ renv/staging/
 *.psd
 photothumb.db
 Thumbs.db
+__pycache__/

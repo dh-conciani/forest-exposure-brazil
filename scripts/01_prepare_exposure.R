@@ -41,7 +41,7 @@ if (CFG$collection == "col9") {
   patch <- read_mb_xlsx(f("patch")) |> exposure_from_long("patch_size", "Small-sized patches")
   fire  <- read_mb_xlsx(f("fire"))  |> exposure_fire(k_max = 10)
   # Isolation is not part of the 11.1a tables: produced by
-  # gee/col11/isolation_forest_col11.js and read here once the CSVs exist.
+  # the Colab pipeline gee/col11/isolation_pipeline/ and read here once the CSVs exist.
   iso_all <- read_isolation_col11(path_raw("col11", "isolation"))
 }
 edge  <- edge  |> filter(threshold %in% CFG$edge_thresholds)
@@ -61,7 +61,7 @@ if (nrow(iso_all) > 0) {
     group_modify(~ add_brazil(.x)) |> ungroup()
   write_csv(iso_sens, path_derived("exposure_isolation_all_params.csv"))
 } else {
-  message("Habitat isolation not available for ", CFG$collection, " - run gee/col11/isolation_forest_col11.js")
+  message("Habitat isolation not available for ", CFG$collection, " - run gee/col11/isolation_pipeline/run_isolation_col11_colab.ipynb")
   unlink(path_derived("exposure_isolation_all_params.csv"))
 }
 

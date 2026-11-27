@@ -105,7 +105,7 @@ forest-exposure-brazil/
 ├── gee/
 │   ├── README.md           GEE scripts used, asset ids, parameters, provenance
 │   ├── submitted_col9/     JavaScript versions used for the submitted analysis
-│   └── col11/              isolation script for Collection 11 (+ README)
+│   └── col11/              Colab isolation pipeline for Collection 11 (+ README)
 └── docs/
     ├── workflow.md          methodological flowchart (R2 comment 4.1)
     ├── gee_new_runs.md      new GEE exports needed for the revision

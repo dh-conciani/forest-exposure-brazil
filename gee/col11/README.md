@@ -1,26 +1,36 @@
-# Collection 11 — GEE steps for the paper
+# Collection 11: GEE steps for the paper
 
 The MapBiomas Degradation Module tables `*-11.1a.xlsx` (edge area + edge age, patch size,
-fire frequency, secondary vegetation; tables cover 1985–2025, the paper uses 1986–2024) are used directly from `data/raw/col11/`.
-Habitat isolation is **not** in those tables and is produced by `isolation_forest_col11.js`.
+fire frequency, secondary vegetation; tables cover 1985–2025, the paper uses 1986–2024) are used
+directly from `data/raw/col11/`. Habitat isolation is **not** in those tables and is produced by the
+Colab pipeline in `isolation_pipeline/`.
 
-## isolation_forest_col11.js
+## isolation_pipeline/
 
-* Follows ATBD v2 §2.6 (targets ≤ 25/50/100 ha, sources ≥ 100/500/1000 ha, ≥ 5/10/20 km).
-* Uses the module **patch-size asset** (GRASS `r.clump`, 8-neighbour, true area) → no
-  `connectedPixelCount()` 1,024-pixel limit (R2 3, 3.2, 3.3).
-* Distance with `fastDistanceTransform` at 100 m in **EPSG:5880** (metric, equal at all latitudes; R2 3.1).
-* Patch-level distance = minimum over the target patch (100 m components, 8-neighbour).
-* Output: one CSV per year → `data/raw/col11/isolation/`. Columns
-  `year, territory (= biome*100 + LULC class), source_ha, target_ha, dist_class, area_ha`;
-  `dist_class` is exclusive (5 = 5–10 km, 10 = 10–20 km, 20 = ≥ 20 km; 0 = forest reference).
-  `R/utils.R::read_isolation_col11()` converts it to cumulative thresholds.
+| File | What it is |
+|---|---|
+| `run_isolation_col11_colab.ipynb` | Colab notebook: authenticate → check inputs → test 2022 → run 1986–2024 in one call |
+| `isolation_col11.py` | the pipeline (stage builders + self-managing scheduler); the notebook embeds the same file |
+| `METHOD_CHANGES.md` | differences from the original v6/v7 JavaScript workflow |
+
+Stages per year (all at 100 m, assets in
+`projects/mapbiomas-brazil/assets/DEGRADATION/COLLECTION-11/isolation/`):
+
+```
+S1 masks_100m_v1/masks_<y>        forest_bin, natural_bin, lulc
+S2 conn_100m_v1/conn_<y>          connectedPixelCount (forest, natural)
+S3 distance_100m_v1/distance_<y>  distance to sources >= 100/500/1000 px
+S4 isolation_100m_v1/isolation_<y> 24 bands uso_t{T}_s{S}_d{D} (LULC class of isolated pixels)
+S5 stats_v1/isolation_stats_<y>   forest area (30 m) by biome x class x combination  (+ CSV on Drive)
+```
+
+39 years × 6 exports = 234 tasks; the scheduler starts each one as soon as its inputs exist
+(`max_concurrent = 1500`), retries failures twice, and can be re-run to resume.
+
+After it finishes: download the Drive CSVs (`DEGRADATION-COL11-ISOLATION/isolation_forest_col11_<y>.csv`)
+into `data/raw/col11/isolation/` and run `DEG_COLLECTION=col11 Rscript run_all.R`.
 
 ### Before running
-1. Fill the `TODO` asset ids (LULC Collection 11 and the Collection 11 patch-size asset).
-2. Confirm the biome codes of `biomas-raster-41` and update `biome_code` in `R/utils.R`
-   (the module scripts use 3 = Pantanal; the others are placeholders).
-3. Pantanal: the Collection 9 workflow treated water as native for patches/isolation. Check
-   whether the Collection 11 patch-size asset already does; if not, isolation in the Pantanal
-   will count flooding as fragmentation (R2 7.1).
-4. Test with `years: [2022]` first, check the console and the two map layers, then run all years.
+1. Confirm the LULC Collection 11 asset id (`Config.lulc_asset`); `check_inputs()` fails if it is wrong.
+2. Send the biome codes printed by `check_inputs()` to update `biome_code` in `R/utils.R`
+   (and `Config.pantanal_code`, assumed 3).
