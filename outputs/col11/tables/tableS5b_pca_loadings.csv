@@ -1,0 +1,9 @@
+driver,PC1,PC2,analysis
+Edge area,0.6783519022283939,-0.19607117198594873,A_standardized_pooled
+Small-sized patches,0.676755808502945,-0.20850142328420435,A_standardized_pooled
+Fire frequency,-0.2860773888314926,-0.9581666097315837,A_standardized_pooled
+Edge area,0.5831735315209652,0.1580362637622106,B_within_biome
+Small-sized patches,0.57660434563244,0.6104166349579552,B_within_biome
+Fire frequency,0.5722202903874973,-0.7761546695747489,B_within_biome
+Edge area,0.7071067811865478,0.7071067811865471,B2_within_biome_no_fire
+Small-sized patches,0.7071067811865471,-0.7071067811865478,B2_within_biome_no_fire

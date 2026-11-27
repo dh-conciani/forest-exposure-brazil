@@ -22,6 +22,9 @@
 # >= 5 km; fire: >= 1 fire), so the numbers should match Figure 4.
 # =============================================================================
 source(here::here("R", "utils.R"))
+if (CFG$collection != "col9") {
+  message("07: IBGE vegetation-type tables only exist for col9 - request the 11.1a tables by IBGE vegetation type.")
+} else {
 
 lk <- read_csv(path_raw("ibge_vegetation", "ibge_vegetation_lookup.csv"), show_col_types = FALSE)
 forest_types <- c(
@@ -84,3 +87,4 @@ save_fig(fig4, "fig4_forest_type_exposure_ranking", width = 8, height = 4)
 print(sens |> select(scenario, legenda_1, rank_mean_pct) |>
         pivot_wider(names_from = scenario, values_from = rank_mean_pct))
 message("07_forest_type_ranking: done.")
+}

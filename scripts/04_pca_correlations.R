@@ -34,7 +34,7 @@ wide <- read_csv(path_derived("exposure_biome.csv"), show_col_types = FALSE) |>
   select(biome, year, driver, pct_exposed) |>
   pivot_wider(names_from = driver, values_from = pct_exposed) |>
   mutate(biome = factor(biome, levels = CFG$biome_order))
-vars <- CFG$driver_order
+vars <- intersect(CFG$driver_order, names(wide))   # isolation may be missing (col11)
 
 run_pca <- function(X, label) {
   p <- prcomp(X, center = TRUE, scale. = TRUE)
@@ -68,7 +68,7 @@ biplot <- function(res, data) {
     ggrepel::geom_label_repel(data = ld, aes(PC1 * k, PC2 * k, label = driver), inherit.aes = FALSE,
               size = 2.6, colour = "grey20", fill = "white", label.size = 0, min.segment.length = 1) +
     scale_colour_brewer(palette = "Dark2", name = NULL) +
-    scale_alpha_continuous(range = c(0.25, 1), breaks = c(1986, 2004, 2022), name = "Year") +
+    scale_alpha_continuous(range = c(0.25, 1), breaks = c(CFG$year_start, round(mean(c(CFG$year_start, CFG$year_end))), CFG$year_end), name = "Year") +
     labs(x = paste0("PC1 (", ve[1], "%)"), y = paste0("PC2 (", ve[2], "%)")) +
     theme_paper(9)
 }

@@ -47,17 +47,21 @@ figS3 <- ranks |>
   ggplot(aes(threshold, biome, fill = pct_exposed)) +
   geom_tile(colour = "white") +
   geom_text(aes(label = rank), size = 2.7) +
-  scale_fill_gradientn(colours = RColorBrewer_RdPu, name = "% exposed (2022)", trans = "sqrt") +
+  scale_fill_gradientn(colours = RColorBrewer_RdPu, name = paste0("% exposed (", CFG$year_end, ")"), trans = "sqrt") +
   facet_wrap(~driver, scales = "free_x", nrow = 1) +
   labs(x = "Threshold", y = NULL, subtitle = "Numbers = biome rank (1 = most exposed)") +
   theme_paper(9) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 save_fig(figS3, "figS3_rank_sensitivity", width = 11, height = 3.6)
 
+if (!file.exists(path_derived("exposure_isolation_all_params.csv"))) {
+  message("05: isolation parameters not available for ", CFG$collection, "; Table S6c skipped.")
+} else {
 iso <- read_csv(path_derived("exposure_isolation_all_params.csv"), show_col_types = FALSE) |>
   filter(year %in% c(CFG$year_start, CFG$year_end)) |>
   select(source_ha, target_ha, threshold_km = threshold, biome, year, pct_exposed) |>
   pivot_wider(names_from = year, values_from = pct_exposed, names_prefix = "pct_") |>
   arrange(biome, source_ha, target_ha, threshold_km)
 write_tab(iso, "tableS6c_isolation_all_params")
+}
 print(stab)
 message("05_threshold_sensitivity: done.")

@@ -1,0 +1,9 @@
+analysis,PC,var_explained
+A_standardized_pooled,PC1,0.6784673239121585
+A_standardized_pooled,PC2,0.3025934017754959
+A_standardized_pooled,PC3,0.01893927431234568
+B_within_biome,PC1,0.961719586229937
+B_within_biome,PC2,0.02958352759914686
+B_within_biome,PC3,0.00869688617091606
+B2_within_biome_no_fire,PC1,0.9837180184920962
+B2_within_biome_no_fire,PC2,0.016281981507903817

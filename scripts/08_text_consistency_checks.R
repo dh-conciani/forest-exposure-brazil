@@ -8,6 +8,9 @@
 # a row of this table (or of Tables S3-S8). Re-run after any data update.
 # =============================================================================
 source(here::here("R", "utils.R"))
+if (CFG$collection != "col9") {
+  message("08: checks refer to the numbers of the submitted text (col9); see 09_compare_collections.R")
+} else {
 
 ex <- read_csv(path_derived("exposure_biome.csv"), show_col_types = FALSE)
 get_range <- function(drv, bio, yr) {
@@ -71,3 +74,4 @@ out <- bind_rows(checks |> select(section, claim_in_manuscript, submitted_value,
 write_tab(out, "text_numbers_check")
 print(out, n = 50, width = 200)
 message("08_text_consistency_checks: done. Compare columns 'submitted_value' and 'recomputed'.")
+}
