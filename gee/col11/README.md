@@ -50,3 +50,7 @@ Limiares adotados no Col. 11 (decisão dos autores, 27/11/2026):
 `[500, 1000, 2000, 5000, 10000]` m (JS e Colab). O R (`isolation_from_js_long` em
 `R/utils.R`) converte as classes exclusivas em exposição cumulativa (≥ d), com
 `threshold` em km; o cenário principal continua ≥ 5 km.
+
+A pasta `isolation/` e a ImageCollection `forest_isolation` são criadas pelo
+próprio script ao carregar (`ensureContainer`, idempotente), antes das tasks;
+o GEE não as cria no export. No Colab isso já é feito por `ensure_container`.
