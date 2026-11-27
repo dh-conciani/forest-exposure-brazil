@@ -45,3 +45,8 @@ de áreas para o Drive e um mapa de 30 m (9 bandas `s<S>_t<T>`, uint8, valor = �
 da classe de distância, legenda na propriedade `values`) para a ImageCollection
 `DEGRADATION/COLLECTION-11/isolation/forest_isolation`. O pipeline Python/Colab não
 depende do asset de patch size e usa 5/10/20 km.
+
+Limiares adotados no Col. 11 (decisão dos autores, 27/11/2026):
+`[100, 200, 500, 1000, 5000, 10000]` m. O R (`isolation_from_js_long` em
+`R/utils.R`) converte as classes exclusivas em exposição cumulativa (≥ d), com
+`threshold` em km; o cenário principal continua ≥ 5 km.

@@ -21,7 +21,7 @@ compute the % of forest area that is:
 |---|---|---|---|
 | Edge area | forest pixel within *d* m of an anthropogenic pixel (`distance()` with `ee.Kernel.euclidean(d + 10 m)`, 30 m grid; see gee/README.md for the exact rule) | ≤ 30, 60, 90, 120, 150, 300, 600, 1000 m | ≤ 150 m |
 | Small-sized patches | forest pixel inside a native-vegetation patch (8-neighbour) of area ≤ *a* ha | ≤ 3, 5, 10, 25, 50, 75 ha | ≤ 50 ha |
-| Habitat isolation | forest pixel in a target native-vegetation patch ≤ 100 ha located ≥ *k* km from a source patch ≥ 1000 ha (100 m grid) | ≥ 5, 10, 20 km | ≥ 5 km |
+| Habitat isolation | forest pixel in a target native-vegetation patch ≤ 100 ha located ≥ *k* km from a source patch ≥ 1000 ha (100 m grid) | col9: ≥ 5, 10, 20 km; col11: ≥ 0.1, 0.2, 0.5, 1, 5, 10 km | ≥ 5 km |
 | Fire frequency | forest pixel burned ≥ *n* times since 1985 (cumulative) | ≥ 1 … 10 fires | ≥ 1 fire |
 
 Forest = MapBiomas Collection 9 classes 3 (Forest Formation), 5 (Mangrove), 6 (Floodable Forest) and

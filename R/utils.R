@@ -144,6 +144,7 @@ read_isolation_col11 <- function(dir) {
            lulc_class = territory %% 100) |>
     filter(lulc_class %in% c(3, 5, 6, 49), year >= CFG$year_start, year <= CFG$year_end)
   if (anyNA(x$biome)) stop("Unknown biome code in isolation tables: check `biome_code` in R/utils.R")
+  if ("dist_class" %in% names(x)) return(isolation_from_js_long(x))
   ref <- x |> group_by(biome, year) |> summarise(area_forest_ha = sum(ref_ha))
   x |> select(biome, year, starts_with("uso_")) |>
     tidyr::pivot_longer(starts_with("uso_"), names_to = "combo", values_to = "a") |>
@@ -152,6 +153,30 @@ read_isolation_col11 <- function(dir) {
     group_by(biome, year, source_ha, target_ha, threshold) |>
     summarise(area_exposed_ha = sum(a, na.rm = TRUE)) |>
     ungroup() |>
+    left_join(ref, by = c("biome", "year")) |>
+    mutate(driver = "Habitat isolation")
+}
+
+# LONG format of gee/col11/isolation_forest_col11.js (Code Editor):
+#   year, territory, source_ha, target_ha, dist_class, area_ha
+#   dist_class = LOWER threshold (m) of an EXCLUSIVE distance class
+#   (e.g. 100, 200, 500, 1000, 5000, 10000); dist_class 0 = reference forest area.
+# Converted to CUMULATIVE exposure: threshold d (km) = forest at >= d from the
+# nearest source, i.e. the sum of all classes with lower bound >= d. Any number of
+# thresholds is supported; threshold is returned in km (0.1, 0.2, ..., 10).
+isolation_from_js_long <- function(x) {
+  ref <- x |> filter(dist_class == 0) |>
+    group_by(biome, year) |> summarise(area_forest_ha = sum(area_ha), .groups = "drop")
+  cls <- x |> filter(dist_class > 0) |>
+    group_by(biome, year, source_ha, target_ha, dist_class) |>
+    summarise(a = sum(area_ha), .groups = "drop")
+  thr <- sort(unique(cls$dist_class))
+  tidyr::crossing(cls |> distinct(biome, year, source_ha, target_ha), threshold_m = thr) |>
+    left_join(cls, by = c("biome", "year", "source_ha", "target_ha"),
+              relationship = "many-to-many") |>
+    group_by(biome, year, source_ha, target_ha, threshold_m) |>
+    summarise(area_exposed_ha = sum(a[dist_class >= threshold_m], na.rm = TRUE), .groups = "drop") |>
+    mutate(threshold = threshold_m / 1000) |> select(-threshold_m) |>
     left_join(ref, by = c("biome", "year")) |>
     mutate(driver = "Habitat isolation")
 }

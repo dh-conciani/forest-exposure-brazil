@@ -51,7 +51,7 @@ var CONFIG = {
   sourceSizes: [100, 500, 1000],      // ha, source patch >= value
   targetSizes: [25, 50, 100],         // ha, target patch <= value
   // m, ascending, any length (max 25600 = distance cap). Class i = [d_i, d_i+1)
-  // TODO confirm: paper/ATBD use [5000, 10000, 20000]
+  // (paper default scenario = >= 5 km; finer classes requested by the authors)
   distances:   [100, 200, 500, 1000, 5000, 10000],
   forestClasses: [3, 5, 6, 49],       // forest formation, mangrove, floodable forest, wooded sandbank
   workScale: 100,                     // m, scale of distance computation
