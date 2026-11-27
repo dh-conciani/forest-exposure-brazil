@@ -22,7 +22,7 @@
  *
  * HOW TO RUN
  *   - Fill the CONFIG block (asset ids marked TODO).
- *   - Run: one Export.table task per year is created (41 tasks, 1985-2025).
+ *   - Run: one Export.table task per year is created (39 tasks, 1986-2024).
  *     Start them from the Tasks tab (or with the "Run all" helper of your choice).
  *   - Download the CSVs into data/raw/col11/isolation/ and run
  *     scripts/01_prepare_exposure.R with COLLECTION = "col11".
@@ -40,7 +40,7 @@ var CONFIG = {
   patchSize: 'projects/mapbiomas-brazil/assets/DEGRADATION/COLLECTION-11/public/TODO_degradation_patch_size',
   // Biome raster (IBGE 2019) - same one used for the module statistics
   biomes: 'projects/mapbiomas-workspace/AUXILIAR/biomas-raster-41',
-  years: ee.List.sequence(1985, 2025).getInfo(),
+  years: ee.List.sequence(1986, 2024).getInfo(),   // period of the paper
   sourceSizes: [100, 500, 1000],      // ha, source patch >= value
   targetSizes: [25, 50, 100],         // ha, target patch <= value
   distances:   [5000, 10000, 20000],  // m

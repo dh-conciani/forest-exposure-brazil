@@ -3,7 +3,7 @@
 # is derived from the GEE exports in data/raw/.
 #   Rscript run_all.R
 # Collection: DEG_COLLECTION=col9 (default, submitted data) or col11
-#   (MapBiomas Degradation Module 11.1a, 1986-2025):
+#   (MapBiomas Degradation Module 11.1a, 1986-2024):
 #   DEG_COLLECTION=col11 Rscript run_all.R
 # Requires: R >= 4.3 and the packages pinned in renv.lock (renv::restore()).
 # =============================================================================

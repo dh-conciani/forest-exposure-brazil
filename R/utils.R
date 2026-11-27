@@ -30,7 +30,7 @@ path_tab     <- function(...) { d <- here::here("outputs", Sys.getenv("DEG_COLLE
 #   Sys.setenv(DEG_COLLECTION = "col11"); source("run_all.R")
 # or from a terminal: DEG_COLLECTION=col11 Rscript run_all.R
 #   col9  : tables used in the submitted manuscript (LULC Col. 9), 1986-2022
-#   col11 : MapBiomas Degradation Module tables "11.1a", 1986-2025 (40 years)
+#   col11 : MapBiomas Degradation Module tables "11.1a", analysed 1986-2024
 COLLECTION <- Sys.getenv("DEG_COLLECTION", "col9")
 stopifnot(COLLECTION %in% c("col9", "col11"))
 
@@ -41,8 +41,9 @@ CFG_BY_COLLECTION <- list(
     patch_thresholds = c(3, 5, 10, 25, 50, 75),
     fire_theme = "recurrence"),
   col11 = list(
-    # 1986 is the first year with a previous-year fire record; 2025 = last map
-    year_start = 1986, year_end = 2025,
+    # 1986-2024 (39 annual maps; 2025 is in the tables but left out by the authors'
+    # decision, 27 Nov 2026 - consistent with LULC Col. 10.1/Fire 4.1 period of ATBD v2)
+    year_start = 1986, year_end = 2024,
     # edges up to 5 km exist in the tables; the paper keeps 30-1000 m (R2 5.2)
     edge_thresholds  = c(30, 60, 90, 120, 150, 300, 600, 1000),
     # small patches harmonized up to 100 ha = target size of the isolation metric (R2 5.4)

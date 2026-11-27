@@ -1,7 +1,7 @@
 # Collection 11 — GEE steps for the paper
 
 The MapBiomas Degradation Module tables `*-11.1a.xlsx` (edge area + edge age, patch size,
-fire frequency, secondary vegetation; 1985–2025) are used directly from `data/raw/col11/`.
+fire frequency, secondary vegetation; tables cover 1985–2025, the paper uses 1986–2024) are used directly from `data/raw/col11/`.
 Habitat isolation is **not** in those tables and is produced by `isolation_forest_col11.js`.
 
 ## isolation_forest_col11.js
