@@ -17,9 +17,9 @@ S2  conn       conect_forest, conect_natural               (original step B)
 S3  distance   dist_s100, dist_s500, dist_s1000            (original step C)
                Euclidean distance (25 km kernel) to source patches
                (natural patches >= 100/500/1000 px); 25001 where no source
-S4  isolation  uso_t{T}_s{S}_d{D}  (24 bands)              (original steps D + E)
+S4  isolation  uso_t{T}_s{S}_d{D}  (D in m; 8 src x tgt combos x 5 distances)              (original steps D + E)
                target patches <= 25/50/100 px (4-neighbour components), minimum
-               distance per target patch > 5/10/20 km, value = LULC class
+               distance per target patch > 0.5/1/2/5/10 km, value = LULC class
 S5  stats      area (ha, 30 m) of FOREST in isolated targets, by biome x LULC
                class, for the 24 combinations + forest reference  (new: feeds R)
 
@@ -90,7 +90,7 @@ class Config:
     # ---- isolation parameters ------------------------------------------------------
     source_sizes: List[int] = field(default_factory=lambda: [100, 500, 1000])  # px >= (~ha)
     target_sizes: List[int] = field(default_factory=lambda: [25, 50, 100])     # px <= (~ha)
-    distances_m: List[int] = field(default_factory=lambda: [5000, 10000, 20000])
+    distances_m: List[int] = field(default_factory=lambda: [500, 1000, 2000, 5000, 10000])
     skip_source_le_target: bool = True   # original: target 100 x source 100 not computed
     max_distance_m: int = 25000          # distance kernel radius; beyond -> no_source_value
     no_source_value: int = 25001
@@ -131,7 +131,7 @@ class Config:
 
 
 def band_name(t: int, s: int, d: int) -> str:
-    return f"uso_t{t}_s{s}_d{d // 1000}"
+    return f"uso_t{t}_s{s}_d{d}"
 
 
 # =============================================================================

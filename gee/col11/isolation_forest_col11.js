@@ -6,7 +6,7 @@
  * Same conceptual rule as the Degradation Module ATBD v2, section 2.6:
  *   a forest pixel is "isolated" when it belongs to a TARGET native-vegetation
  *   patch (<= 25 / 50 / 100 ha) whose nearest SOURCE patch (>= 100 / 500 / 1000 ha)
- *   is >= 5 / 10 / 20 km away.
+ *   is >= 0.5 / 1 / 2 / 5 / 10 km away (CONFIG.distances).
  *
  * What changes relative to the Collection 9 workflow (answers R2 3.1, 3.2, 3.3):
  *   1. Patch sizes come from the module's patch-size asset (GRASS r.clump,
@@ -52,7 +52,7 @@ var CONFIG = {
   targetSizes: [25, 50, 100],         // ha, target patch <= value
   // m, ascending, any length (max 25600 = distance cap). Class i = [d_i, d_i+1)
   // (paper default scenario = >= 5 km; finer classes requested by the authors)
-  distances:   [100, 200, 500, 1000, 5000, 10000],
+  distances:   [500, 1000, 2000, 5000, 10000],
   forestClasses: [3, 5, 6, 49],       // forest formation, mangrove, floodable forest, wooded sandbank
   workScale: 100,                     // m, scale of distance computation
   workCrs: 'EPSG:5880',               // SIRGAS 2000 / Brazil Polyconic (metric)

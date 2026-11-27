@@ -18,7 +18,7 @@ Each change is marked `# CHANGE:` in the code or is a configurable option in `Co
 | Sources | natural `conect >= 100 / 500 / 1000` | same |
 | Distance | `distance(ee.Kernel.euclidean(25000, 'meters'))`, 25001 where no source | same |
 | Targets | (forest conect ≤ T) OR (natural conect ≤ T), T = 25 / 50 / 100; `connectedComponents(Kernel.plus(1), maxSize 550)` | same (`target_connectedness="plus"`) |
-| Isolation rule | minimum distance over the target patch `> 5 / 10 / 20 km` (`reduceConnectedComponents(min, 256)`) | same |
+| Isolation rule | minimum distance over the target patch `> 0.5 / 1 / 2 / 5 / 10 km` (`reduceConnectedComponents(min, 256)`) | same |
 | Combinations | 24 (target 100 × source 100 skipped) | same (`skip_source_le_target=True`) |
 | "Uso" output | LULC class of isolated pixels, classes 3, 4, 5, 6, 49 (forest) + 11, 12, 32, 29, 50 (non-forest) | same (`uso_classes`) |
 

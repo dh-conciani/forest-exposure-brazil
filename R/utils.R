@@ -153,6 +153,7 @@ read_isolation_col11 <- function(dir) {
     group_by(biome, year, source_ha, target_ha, threshold) |>
     summarise(area_exposed_ha = sum(a, na.rm = TRUE)) |>
     ungroup() |>
+    mutate(threshold = threshold / 1000) |>   # band suffix d<D> is in metres
     left_join(ref, by = c("biome", "year")) |>
     mutate(driver = "Habitat isolation")
 }
@@ -163,7 +164,7 @@ read_isolation_col11 <- function(dir) {
 #   (e.g. 100, 200, 500, 1000, 5000, 10000); dist_class 0 = reference forest area.
 # Converted to CUMULATIVE exposure: threshold d (km) = forest at >= d from the
 # nearest source, i.e. the sum of all classes with lower bound >= d. Any number of
-# thresholds is supported; threshold is returned in km (0.1, 0.2, ..., 10).
+# thresholds is supported; threshold is returned in km (0.5, 1, 2, 5, 10).
 isolation_from_js_long <- function(x) {
   ref <- x |> filter(dist_class == 0) |>
     group_by(biome, year) |> summarise(area_forest_ha = sum(area_ha), .groups = "drop")
