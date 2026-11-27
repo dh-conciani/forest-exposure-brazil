@@ -40,6 +40,8 @@ into `data/raw/col11/isolation/` and run `DEG_COLLECTION=col11 Rscript run_all.R
 Usa o tamanho de fragmento do próprio módulo de degradação
 (`DEGRADATION/COLLECTION-11/area`, ImageCollection com uma imagem por ano,
 `degradation_patch_size_col11_<ano>_v1`, 1 banda em ha) em vez de
-`connectedPixelCount`. Distâncias fixas em 5/10/20 km (`CONFIG.distances`
-precisa ter exatamente 3 valores). O pipeline Python/Colab não depende desse
-asset e já usa 5/10/20 km.
+`connectedPixelCount`. `CONFIG.distances` aceita N limiares (classes exclusivas). Exporta por ano um CSV
+de áreas para o Drive e um mapa de 30 m (9 bandas `s<S>_t<T>`, uint8, valor = índice
+da classe de distância, legenda na propriedade `values`) para a ImageCollection
+`DEGRADATION/COLLECTION-11/isolation/forest_isolation`. O pipeline Python/Colab não
+depende do asset de patch size e usa 5/10/20 km.

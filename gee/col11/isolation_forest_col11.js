@@ -21,15 +21,19 @@
  *      source size x target size x distance class, plus forest reference area.
  *
  * HOW TO RUN
- *   - Fill the CONFIG block (asset ids marked TODO).
- *   - Run: one Export.table task per year is created (39 tasks, 1986-2024).
- *     Start them from the Tasks tab (or with the "Run all" helper of your choice).
- *   - Download the CSVs into data/raw/col11/isolation/ and run
- *     scripts/01_prepare_exposure.R with COLLECTION = "col11".
+ *   - Check CONFIG (distances, version, exportTables / exportImages).
+ *   - Run: per year, 1 Export.table (CSV to Drive) + 1 Export.image (30 m asset),
+ *     i.e. 78 tasks for 1986-2024. Start them from the Tasks tab.
+ *   - Tip: test with years: [2022] first.
  *
- * Output columns: year, territory (biome*100 + LULC class), source_ha, target_ha,
- *                 dist_class (0 = reference forest area; 5 = 5-10 km; 10 = 10-20 km;
- *                 20 = >= 20 km; EXCLUSIVE classes), area_ha
+ * TABLE (Drive CSV, one per year): year, territory (biome*100 + LULC class),
+ *   source_ha, target_ha, dist_class, area_ha. dist_class = LOWER distance
+ *   threshold in m of an EXCLUSIVE class (0 = reference forest area).
+ *
+ * MAPS (ImageCollection CONFIG.imageCollection, one image per year):
+ *   9 uint8 bands s<S>_t<T> (source >= S ha, target <= T ha); value i = distance
+ *   class i (property 'values' gives the legend); masked = forest not isolated.
+ *   Pyramiding MODE, 30 m, EPSG:4326, properties year/collection/version/...
  * ============================================================================= */
 
 // ------------------------------- CONFIG --------------------------------------
@@ -46,12 +50,19 @@ var CONFIG = {
   years: ee.List.sequence(1986, 2024).getInfo(),   // period of the paper
   sourceSizes: [100, 500, 1000],      // ha, source patch >= value
   targetSizes: [25, 50, 100],         // ha, target patch <= value
-  distances:   [5000, 10000, 20000],  // m; EXACTLY 3 values (dist_class 5 / 10 / 20 below)
+  // m, ascending, any length (max 25600 = distance cap). Class i = [d_i, d_i+1)
+  // TODO confirm: paper/ATBD use [5000, 10000, 20000]
+  distances:   [100, 200, 500, 1000, 5000, 10000],
   forestClasses: [3, 5, 6, 49],       // forest formation, mangrove, floodable forest, wooded sandbank
   workScale: 100,                     // m, scale of distance computation
   workCrs: 'EPSG:5880',               // SIRGAS 2000 / Brazil Polyconic (metric)
   driveFolder: 'PAPER-DEGRAD-COL11',
-  exportIsolationImages: false        // true -> also export yearly 30 m isolation asset (Figure 2)
+  // --- what to export ---
+  exportTables: true,                 // yearly area CSVs to Drive (R pipeline)
+  exportImages: true,                 // yearly 30 m isolation maps to an ImageCollection
+  imageCollection: 'projects/mapbiomas-brazil/assets/DEGRADATION/COLLECTION-11/isolation/forest_isolation',
+  imagePrefix: 'degradation_forest_isolation_col11_',  // + <year> + '_v' + version
+  version: '1'
 };
 
 var lulc      = ee.Image(CONFIG.lulc);
@@ -60,9 +71,14 @@ var patchSizeOf = function (year) {
   return ee.Image(CONFIG.patchSize + '/' + CONFIG.patchPrefix + year + CONFIG.patchSuffix)
     .select(0).rename('size');
 };
-if (CONFIG.distances.length !== 3) {
-  throw new Error('CONFIG.distances must have exactly 3 values (5/10/20 km classes).');
+if (CONFIG.distances.length > 254 || CONFIG.distances[CONFIG.distances.length - 1] > 25600) {
+  throw new Error('CONFIG.distances: at most 254 thresholds, last one <= 25600 m.');
 }
+// map value i (1..N) <-> lower threshold (m); stored as image properties
+var classLegend = CONFIG.distances.map(function (d, i) {
+  var hi = CONFIG.distances[i + 1];
+  return (i + 1) + ' = ' + d + (hi ? '-' + hi : '+') + ' m';
+}).join('; ');
 var biomes    = ee.Image(CONFIG.biomes).rename('biome');
 var pixelArea = ee.Image.pixelArea().divide(10000);  // ha (true area)
 var geometry  = biomes.geometry();
@@ -97,6 +113,7 @@ var processYear = function (year) {
   });
 
   var rows = ee.FeatureCollection([]);
+  var bands = [];   // one band per source x target: s<S>_t<T>, value = distance class
 
   // reference forest area (dist_class 0)
   var refStats = pixelArea.updateMask(forest).addBands(territory)
@@ -120,20 +137,18 @@ var processYear = function (year) {
         .reduceConnectedComponents(ee.Reducer.min(), 'labels', 256)
         .reproject(proj100);
       // exclusive distance class at 100 m
-      var cls100 = ee.Image(0)
-        .where(minDist.gte(CONFIG.distances[0]), 5)
-        .where(minDist.gte(CONFIG.distances[1]), 10)
-        .where(minDist.gte(CONFIG.distances[2]), 20)
-        .reproject(proj100).selfMask();
+      // exclusive distance class at 100 m: value i where d_i <= minDist < d_i+1
+      var cls100 = ee.Image(0);
+      CONFIG.distances.forEach(function (d, i) {
+        cls100 = cls100.where(minDist.gte(d), i + 1);
+      });
+      cls100 = cls100.reproject(proj100).selfMask();
       // back to 30 m: forest pixels of target patches inside isolated cells
       var cls30 = cls100.updateMask(target30).updateMask(forest).rename('dist_class');
 
-      if (CONFIG.exportIsolationImages && s === 1000 && t === 100) {
-        Export.image.toAsset({image: cls30.toByte(), description: 'isol_forest_s1000_t100_' + year,
-          assetId: 'users/TODO/isol_forest_s1000_t100_' + year, region: geometry,
-          scale: 30, maxPixels: 1e13});
-      }
+      bands.push(cls30.toByte().rename('s' + s + '_t' + t));
 
+      var distLow = ee.List([0].concat(CONFIG.distances));   // index -> lower threshold (m)
       var st = pixelArea.updateMask(cls30).addBands(cls30).addBands(territory)
         .reduceRegion({reducer: ee.Reducer.sum().group(1, 'dist_class').group(2, 'territory'),
                        geometry: geometry, scale: 30, maxPixels: 1e13, tileScale: 4});
@@ -143,26 +158,62 @@ var processYear = function (year) {
         return ee.List(g.get('groups')).map(function (h) {
           h = ee.Dictionary(h);
           return ee.Feature(null, {year: year, territory: terr, source_ha: s, target_ha: t,
-                                   dist_class: h.get('dist_class'), area_ha: h.get('sum')});
+                                   dist_class: distLow.get(ee.Number(h.get('dist_class')).int()), area_ha: h.get('sum')});
         });
       }).flatten();
       rows = rows.merge(ee.FeatureCollection(feats));
     });
   });
-  return rows;
+  // 30 m map: 9 uint8 bands (s<S>_t<T>), value i = distance class i (see classLegend),
+  // masked where the forest pixel is not isolated (or is not forest)
+  var image = ee.Image.cat(bands).set({
+    'system:time_start': ee.Date.fromYMD(year, 1, 1).millis(),
+    'system:time_end':   ee.Date.fromYMD(year + 1, 1, 1).millis(),
+    year: year, collection: 11, version: CONFIG.version, theme: 'isolation',
+    biome_scope: 'BRAZIL', lulc_asset: CONFIG.lulc, patch_size_asset: CONFIG.patchSize,
+    forest_classes: CONFIG.forestClasses.join(','),
+    source_sizes_ha: CONFIG.sourceSizes.join(','), target_sizes_ha: CONFIG.targetSizes.join(','),
+    distances_m: CONFIG.distances.join(','), work_crs: CONFIG.workCrs, work_scale_m: CONFIG.workScale,
+    values: classLegend + ' from nearest source patch; masked = not isolated'
+  });
+  return {rows: rows, image: image};
 };
 
+// create the ImageCollection once (ignored if it already exists)
+if (CONFIG.exportImages) {
+  try { ee.data.createAsset({type: 'ImageCollection'}, CONFIG.imageCollection); }
+  catch (e) { print('ImageCollection already exists (ok):', CONFIG.imageCollection); }
+}
+
 CONFIG.years.forEach(function (year) {
-  Export.table.toDrive({
-    collection: processYear(year),
-    description: 'isolation_forest_col11_' + year,
-    folder: CONFIG.driveFolder,
-    fileFormat: 'CSV',
-    selectors: ['year', 'territory', 'source_ha', 'target_ha', 'dist_class', 'area_ha']
-  });
+  var out = processYear(year);
+  if (CONFIG.exportTables) {
+    Export.table.toDrive({
+      collection: out.rows,
+      description: 'isolation_forest_col11_' + year,
+      folder: CONFIG.driveFolder,
+      fileFormat: 'CSV',
+      selectors: ['year', 'territory', 'source_ha', 'target_ha', 'dist_class', 'area_ha']
+    });
+  }
+  if (CONFIG.exportImages) {
+    var name = CONFIG.imagePrefix + year + '_v' + CONFIG.version;
+    Export.image.toAsset({
+      image: out.image,
+      description: name,
+      assetId: CONFIG.imageCollection + '/' + name,
+      region: geometry,
+      scale: 30,
+      crs: 'EPSG:4326',
+      pyramidingPolicy: {'.default': 'mode'},
+      maxPixels: 1e13
+    });
+  }
 });
 
 // Quick visual check for one year (no export)
 var y = 2022;
 Map.addLayer(patchSizeOf(y).lte(100).selfMask(), {palette: ['orange']}, 'targets <= 100 ha ' + y, false);
+Map.addLayer(processYear(y).image.select('s1000_t100'),
+  {min: 1, max: CONFIG.distances.length, palette: ['#fcc5c0', '#f768a1', '#7a0177']}, 'isolated forest s1000_t100 ' + y, false);
 Map.addLayer(patchSizeOf(y).gte(1000).selfMask(), {palette: ['darkgreen']}, 'sources >= 1000 ha ' + y, false);
