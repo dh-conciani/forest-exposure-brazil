@@ -1,0 +1,12 @@
+Package: forestexposurebrazil
+Title: Forest Exposure to Degradation Drivers in Brazil, 1986-2022 (analysis compendium)
+Version: 1.0.0
+Description: Research compendium reproducing the R post-processing (tables,
+    statistics and figures) of "Tracking the decline: forest exposure to
+    degradation drivers in Brazil" from MapBiomas Collection 9 statistics
+    exported from Google Earth Engine.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.3)
+Imports: dplyr, tidyr, readr, purrr, ggplot2, patchwork, ggrepel, forcats, here, foreign
+Suggests: renv

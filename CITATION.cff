@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the article and this archived release."
+title: "Forest exposure to degradation drivers in Brazil (1986-2022): analysis compendium"
+authors:
+  - family-names: Conciani
+    given-names: Dhemerson E.
+version: 1.0.0
+doi: 10.5281/zenodo.XXXXXXX
+license: MIT
+repository-code: "https://github.com/<owner>/forest-exposure-brazil"

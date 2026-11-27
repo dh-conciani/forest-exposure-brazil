@@ -1,0 +1,37 @@
+legenda_1,mean_pct,rank_sum,rank_mean_pct,rank_rank_sum,scenario,type
+Floresta Estacional Decidual,18.20004636188735,11,3,2.5,"2022, equal weights",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,26.719663521398186,7,1,1,"2022, equal weights",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,8.2880923627022,17,4,4,"2022, equal weights",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,3.288931663296836,18,6,5,"2022, equal weights",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,3.29532720997792,20,5,6,"2022, equal weights",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,26.569427997888464,11,2,2.5,"2022, equal weights",MOF - Mixed Ombrophilous Forest
+Floresta Estacional Decidual,15.99846874034336,10,3,2,"2010, equal weights",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,24.954617511853233,7,2,1,"2010, equal weights",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,5.86929395571385,16,4,4,"2010, equal weights",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,2.7657113592736717,20,5,5.5,"2010, equal weights",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,2.649043858745826,20,6,5.5,"2010, equal weights",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,25.71691319010666,11,1,3,"2010, equal weights",MOF - Mixed Ombrophilous Forest
+Floresta Estacional Decidual,10.198390175346892,8,2,2,"2022, without Edge area",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,14.784085656030651,5,1,1,"2022, without Edge area",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,6.700779167748022,13,4,5,"2022, without Edge area",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,1.9424149916433175,12,5,4,"2022, without Edge area",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,1.716578750506576,15,6,6,"2022, without Edge area",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,9.33879725097559,10,3,3,"2022, without Edge area",MOF - Mixed Ombrophilous Forest
+Floresta Estacional Decidual,21.209150991314218,8,3,2,"2022, without Small-sized patches",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,28.807474282575058,6,2,1,"2022, without Small-sized patches",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,10.717962361059284,11,4,4,"2022, without Small-sized patches",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,4.048212978493661,14,6,5,"2022, without Small-sized patches",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,4.057183452434952,15,5,6,"2022, without Small-sized patches",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,29.185539148034074,9,1,3,"2022, without Small-sized patches",MOF - Mixed Ombrophilous Forest
+Floresta Estacional Decidual,22.369561449767186,8,3,2,"2022, without Habitat isolation",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,30.796631845782436,6,2,1,"2022, without Habitat isolation",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,10.964974155249644,11,4,4,"2022, without Habitat isolation",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,4.262890651942547,14,6,5,"2022, without Habitat isolation",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,4.302753253072583,15,5,6,"2022, without Habitat isolation",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,32.69677582928541,9,1,3,"2022, without Habitat isolation",MOF - Mixed Ombrophilous Forest
+Floresta Estacional Decidual,19.023082831121094,9,3,3,"2022, without Fire frequency",DSF - Deciduous Seasonal Forest
+Floresta Estacional Semidecidual,32.4904623012046,4,2,1,"2022, without Fire frequency",SSF - Semideciduous Seasonal Forest
+Floresta Estacional Sempre-Verde,4.7686537667518465,16,4,6,"2022, without Fire frequency",ESF - Evergreen Seasonal Forest
+Floresta Ombrófila Aberta,2.9022080311078193,14,6,4,"2022, without Fire frequency",OOF - Open Ombrophilous Forest
+Floresta Ombrófila Densa,3.1047933838975674,15,5,5,"2022, without Fire frequency",DOF - Dense Ombrophilous Forest
+Floresta Ombrófila Mista,35.056599763258795,5,1,2,"2022, without Fire frequency",MOF - Mixed Ombrophilous Forest

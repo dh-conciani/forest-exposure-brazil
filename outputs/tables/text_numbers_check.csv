@@ -1,0 +1,23 @@
+section,claim_in_manuscript,submitted_value,recomputed,max_abs_diff,status
+Results,Brazil edge 1986 (30-1000 m),3-26%,2.8-25.6%,0.3999999999999986,OK (rounding)
+Results,Brazil edge 2022 (30-1000 m),4-33%,4.1-33.4%,0.3999999999999986,OK (rounding)
+Results,Brazil small patches 1986,0.3-1.9%,0.3-1.9%,0,OK (rounding)
+Results,Brazil small patches 2022,0.4-3%,0.4-3.0%,0,OK (rounding)
+Results,Brazil isolation 1986,0.4-1.2%,0.4-1.2%,0,OK (rounding)
+Results,Brazil isolation 2022,0.6-2.1%,0.6-2.1%,0,OK (rounding)
+Results,Cerrado edge 1986,9-72%,8.8-72.6%,0.5999999999999943,MISMATCH - correct text
+Results,Cerrado edge 2022,11-87%,11.3-86.7%,0.3000000000000007,OK (rounding)
+Results,Atlantic Forest edge 2022,26-95%,25.6-95.4%,0.4000000000000057,OK (rounding)
+Results,Pampa edge 2022,20-96%,19.6-95.9%,0.3999999999999986,OK (rounding)
+Results,Atlantic Forest small patches 2022,3.7-21.8%,3.7-21.8%,0,OK (rounding)
+Results,Atlantic Forest isolation 2022 (R2 8.3),4.9-15%,4.9-15.0%,0,OK (rounding)
+Results,Cerrado isolation 1986,1.2-5%,1.2-5.0%,0,OK (rounding)
+Results,Cerrado isolation 2022,2.5-10%,2.5-9.9%,0.09999999999999964,OK (rounding)
+Results,Pampa small patches 1986,0.7-5%,0.7-5.5%,0.5,OK (rounding)
+Results,Pampa small patches 2022,1.7-9.3%,1.7-9.3%,0,OK (rounding)
+Results,Brazil forest burned >= 1 time by 2022 ('up to 6%'),6%,6.3%,0.2999999999999998,OK (rounding)
+Results,Pantanal forest burned >= 1 time 1986-2022,28%,29.4%,1.3999999999999986,MISMATCH - correct text
+Results,Cerrado forest burned >= 1 time 1986-2022,19%,21.5%,2.5,MISMATCH - correct text
+Results,"Amazon forest burned >= 1 time, area ('at least 16.2 Mha in 40 years')",16.2 Mha,16.8 Mha,0.6000000000000014,MISMATCH - correct text
+Results,"Amazon edge area 1986, absolute (30-1000 m)",2-55 Mha,2.0-55.0 Mha,0,OK (rounding)
+Results,"Amazon edge area 2022, absolute (30-1000 m)",5-73 Mha,4.9-73.0 Mha,0.09999999999999964,OK (rounding)

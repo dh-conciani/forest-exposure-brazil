@@ -1,0 +1,12 @@
+driver,PC1,PC2,analysis
+Edge area,0.5676031951122807,-0.0605840211520771,A_standardized_pooled
+Small-sized patches,0.5619555254832397,-0.09705836322508335,A_standardized_pooled
+Habitat isolation,0.5714225257480214,-0.1672963235729778,A_standardized_pooled
+Fire frequency,-0.18843804643685455,-0.9792452147588353,A_standardized_pooled
+Edge area,0.4959902168747764,0.48711354181132854,B_within_biome
+Small-sized patches,0.5188445228629172,0.3183936737572143,B_within_biome
+Habitat isolation,0.522411344987162,-0.06439637432420137,B_within_biome
+Fire frequency,0.46030473872030464,-0.8106780944797414,B_within_biome
+Edge area,0.5685762771952955,0.750974971688475,B2_within_biome_no_fire
+Small-sized patches,0.5895193358244778,-0.08726689674673238,B2_within_biome_no_fire
+Habitat isolation,0.573749047667885,-0.6545388304979997,B2_within_biome_no_fire
