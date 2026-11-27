@@ -24,6 +24,8 @@
  *   - Check CONFIG (distances, version, exportTables / exportImages).
  *   - Run: per year, 1 Export.table (CSV to Drive) + 1 Export.image (30 m asset),
  *     i.e. 78 tasks for 1986-2024. Start them from the Tasks tab.
+ *     The folder/ImageCollection of the maps is created by the script on load
+ *     (needs write access to the project); re-running is safe.
  *   - Tip: test with years: [2022] first.
  *
  * TABLE (Drive CSV, one per year): year, territory (biome*100 + LULC class),
@@ -179,10 +181,23 @@ var processYear = function (year) {
   return {rows: rows, image: image};
 };
 
-// create the ImageCollection once (ignored if it already exists)
+// Create the output folders + ImageCollection if missing (idempotent).
+// GEE does NOT create them on export: the task dialog fails with "Asset ... not found".
+var assetExists = function (id) {
+  try { ee.data.getAsset(id); return true; } catch (e) { return false; }
+};
+var ensureContainer = function (id, type) {
+  if (assetExists(id)) return;
+  var parent = id.substring(0, id.lastIndexOf('/'));
+  if (parent.split('/').length > 3) ensureContainer(parent, 'FOLDER');   // stop at projects/<p>/assets
+  ee.data.createAsset({type: type}, id);
+  print('created ' + type + ': ' + id);
+};
 if (CONFIG.exportImages) {
-  try { ee.data.createAsset({type: 'ImageCollection'}, CONFIG.imageCollection); }
-  catch (e) { print('ImageCollection already exists (ok):', CONFIG.imageCollection); }
+  ensureContainer(CONFIG.imageCollection, 'IMAGE_COLLECTION');
+  if (!assetExists(CONFIG.imageCollection)) {
+    throw new Error('Could not create ' + CONFIG.imageCollection + ' (check write access).');
+  }
 }
 
 CONFIG.years.forEach(function (year) {
