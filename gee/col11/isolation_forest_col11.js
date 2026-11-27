@@ -66,7 +66,11 @@ var CONFIG = {
   exportImages: true,                 // yearly 30 m isolation maps to an ImageCollection
   imageCollection: 'projects/mapbiomas-brazil/assets/DEGRADATION/COLLECTION-11/isolation/forest_isolation',
   imagePrefix: 'degradation_forest_isolation_col11_',  // + <year> + '_v' + version
-  version: '1'
+  version: '1',
+  // skip exports whose task is queued/running (last `recentTasks` tasks) or whose map asset exists.
+  // Checked ASYNCHRONOUSLY (the editor never freezes); set false to create all tasks.
+  skipCheck: true,
+  recentTasks: 300
 };
 
 var lulc      = ee.Image(CONFIG.lulc);
@@ -202,65 +206,70 @@ if (CONFIG.exportImages) {
   }
 }
 
-// Skip exports already queued/running (same task name) or whose asset already exists.
-var activeTasks = {};
-var ACTIVE = ['PENDING', 'READY', 'RUNNING', 'CANCEL_REQUESTED', 'CANCELLING'];
-var addTask = function (desc, state) {
-  if (desc && ACTIVE.indexOf(String(state).toUpperCase()) >= 0) activeTasks[desc] = state;
-};
-// 1) Cloud API operations (all pages); description/state live in op.metadata
-try {
-  var ops = ee.data.listOperations(10000) || [];
-  if (ops.operations) ops = ops.operations;
-  ops.forEach(function (op) {
-    var m = op.metadata || op;
-    addTask(m.description, m.state);
+// ---------------------------- create the tasks ---------------------------------
+var createExports = function (activeTasks, existingAssets) {
+  var skipped = [];
+  CONFIG.years.forEach(function (year) {
+    var out = processYear(year);
+    var tname = 'isolation_forest_col11_' + year;
+    if (CONFIG.exportTables) {
+      if (activeTasks[tname]) {
+        skipped.push(tname + ' [' + activeTasks[tname] + ']');
+      } else {
+        Export.table.toDrive({
+          collection: out.rows,
+          description: tname,
+          folder: CONFIG.driveFolder,
+          fileFormat: 'CSV',
+          selectors: ['year', 'territory', 'source_ha', 'target_ha', 'dist_class', 'area_ha']
+        });
+      }
+    }
+    var name = CONFIG.imagePrefix + year + '_v' + CONFIG.version;
+    var assetId = CONFIG.imageCollection + '/' + name;
+    if (CONFIG.exportImages) {
+      if (activeTasks[name]) {
+        skipped.push(name + ' [' + activeTasks[name] + ']');
+      } else if (existingAssets[assetId]) {
+        skipped.push(name + ' [asset exists]');
+      } else {
+        Export.image.toAsset({
+          image: out.image,
+          description: name,
+          assetId: assetId,
+          region: geometry,
+          scale: 30,
+          crs: 'EPSG:4326',
+          pyramidingPolicy: {'.default': 'mode'},
+          maxPixels: 1e13
+        });
+      }
+    }
   });
-} catch (e) { print('listOperations failed:', String(e)); }
-// 2) legacy task list (fallback; same tasks shown in the Tasks tab)
-try {
-  var tl = ee.data.getTaskList();
-  (tl && tl.tasks ? tl.tasks : (tl || [])).forEach(function (t) {
-    addTask(t.description, t.state);
-  });
-} catch (e) { print('getTaskList failed:', String(e)); }
-print('Active tasks found (queued/running):', Object.keys(activeTasks).length);
-var skipped = [];
-var isActive = function (name) {
-  if (activeTasks[name]) { skipped.push(name + ' [' + activeTasks[name] + ']'); return true; }
-  return false;
+  print('Skipped ' + skipped.length + ' export(s) (already running or done):', skipped);
 };
 
-CONFIG.years.forEach(function (year) {
-  var out = processYear(year);
-  if (CONFIG.exportTables && !isActive('isolation_forest_col11_' + year)) {
-    Export.table.toDrive({
-      collection: out.rows,
-      description: 'isolation_forest_col11_' + year,
-      folder: CONFIG.driveFolder,
-      fileFormat: 'CSV',
-      selectors: ['year', 'territory', 'source_ha', 'target_ha', 'dist_class', 'area_ha']
+if (!CONFIG.skipCheck) {
+  createExports({}, {});
+} else {
+  // two async requests (one page of recent tasks + one asset listing), then create the tasks
+  var pending = 2, active = {}, existing = {};
+  var done = function () { if (--pending === 0) createExports(active, existing); };
+  var ACTIVE = ['PENDING', 'READY', 'RUNNING', 'CANCEL_REQUESTED', 'CANCELLING'];
+  ee.data.listOperations(CONFIG.recentTasks, function (ops, err) {
+    if (err) print('Task list unavailable (no skipping by name):', err);
+    (ops || []).forEach(function (op) {
+      var m = op.metadata || {};
+      if (m.description && ACTIVE.indexOf(m.state) >= 0) active[m.description] = m.state;
     });
-  }
-  var name = CONFIG.imagePrefix + year + '_v' + CONFIG.version;
-  if (CONFIG.exportImages && !isActive(name)) {
-    if (assetExists(CONFIG.imageCollection + '/' + name)) {
-      skipped.push(name + ' [asset exists]');
-      return;
-    }
-    Export.image.toAsset({
-      image: out.image,
-      description: name,
-      assetId: CONFIG.imageCollection + '/' + name,
-      region: geometry,
-      scale: 30,
-      crs: 'EPSG:4326',
-      pyramidingPolicy: {'.default': 'mode'},
-      maxPixels: 1e13
-    });
-  }
-});
-print('Skipped ' + skipped.length + ' export(s) (already running or done):', skipped);
+    print('Active tasks found (queued/running):', Object.keys(active).length);
+    done();
+  });
+  ee.data.listAssets(CONFIG.imageCollection, {}, function (res, err) {
+    ((res && res.assets) || []).forEach(function (a) { existing[a.id] = true; existing[a.name] = true; });
+    done();
+  });
+}
 
 // Quick visual check for one year (no export)
 var y = 2022;
