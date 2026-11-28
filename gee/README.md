@@ -28,7 +28,7 @@ workflow) and was **not** used in the paper. That mismatch is what Reviewer 2 (2
 | LULC | `projects/mapbiomas-public/assets/brazil/lulc/collection9/mapbiomas_collection90_integration_v1` | Col. 9, 1985–2023 |
 | Biomes | `projects/mapbiomas-workspace/AUXILIAR/biomas-2019-raster` | IBGE 2019, 1:250,000 |
 | IBGE vegetation | `projects/mapbiomas-territories/assets/TERRITORIES/LULC/BRAZIL/COLLECTION9/WORKSPACE/INFORMACAO_AMBIENTAL_VEGETACAO_IBGE_raster` | IBGE potential vegetation (1:250,000), rasterized on the MapBiomas grid |
-| Fire | MapBiomas Fire — **collection to confirm** | — |
+| Fire | MapBiomas Fire (cited as Collection 3 in the submitted manuscript) | — |
 
 Grid: all MapBiomas assets are in EPSG:4326 with a pixel of 0.00026949° (≈ 30 m at the Equator).
 In geographic coordinates the east–west pixel size shrinks with latitude (≈ 26 m at 30° S).

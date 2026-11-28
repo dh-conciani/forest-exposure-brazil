@@ -2,7 +2,7 @@
 
 The MapBiomas Degradation Module tables `*-11.1a.xlsx` (edge area + edge age, patch size,
 fire frequency, secondary vegetation; tables cover 1985–2025, the paper uses 1986–2024) are used
-directly from `data/raw/col11/`. Habitat isolation is **not** in those tables and is produced by the
+directly from `data/raw/col11/`. Fire frequency in those tables comes from MapBiomas Fire Collection 5. Habitat isolation is **not** in those tables and is produced by the
 Colab pipeline in `isolation_pipeline/`.
 
 ## isolation_pipeline/

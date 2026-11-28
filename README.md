@@ -2,13 +2,13 @@
 
 Code and data to reproduce the tables, statistics and figures of
 
-> Conciani et al. *Tracking the decline: forest exposure to degradation drivers in Brazil, 1986–2022.*
+> Conciani et al. *Tracking the decline: forest exposure to degradation drivers in Brazil, 1986–2024.*
 > Perspectives in Ecology and Conservation (revised submission, PECON-D-26-00178).
 
 The repository is frozen at the release cited in the paper (`vX.Y.Z`, DOI: `10.5281/zenodo.XXXXXXX` — **to be minted on Zenodo after the final run**).
 It documents *exactly* what was run for the paper. The operational MapBiomas
 Degradation Module (<https://github.com/mapbiomas/brazil-degradation>) has since moved to
-Collection 10.1 / Fire Collection 4.1 and other parameters; see [`gee/README.md`](gee/README.md)
+Collection 10.1 / Fire Collection 4.1 and other parameters (the revised paper uses LULC Collection 11 and Fire Collection 5, in `gee/col11/`); see [`gee/README.md`](gee/README.md)
 for the mapping between the two.
 
 ## What is measured

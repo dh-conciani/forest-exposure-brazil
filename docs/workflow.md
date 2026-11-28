@@ -6,7 +6,7 @@ This flowchart is the source for the new Supplementary Figure S1 (methods flowch
 flowchart TD
   subgraph IN[Inputs]
     A1[MapBiomas LULC Collection 9<br/>annual, 1985-2023, 30 m, EPSG:4326]
-    A2[MapBiomas Fire<br/>annual burned area - collection to confirm]
+    A2[MapBiomas Fire<br/>annual burned area - Collection 5 (Col. 11 analysis)]
     A3[IBGE biomes 2019<br/>1:250,000]
     A4[IBGE potential vegetation map<br/>1:250,000]
   end
