@@ -132,10 +132,11 @@ exposure_fire <- function(df, k_max = 10) {
 # territory = biome_code * 100 + LULC class (30 m); ref_ha = forest area;
 # uso_* = forest area in target patches <= T px whose nearest source patch
 # (>= S px) is > D km away. Classes are CUMULATIVE in D (> 5 includes > 10, > 20).
-# TODO: confirm the biome codes of 'biomas-raster-41' (Pantanal = 3 in the module scripts);
-# run iso.check_inputs(cfg) in the notebook to list the codes present.
-biome_code <- c(`1` = "Amazon", `2` = "Caatinga", `3` = "Pantanal",
-                `4` = "Cerrado", `5` = "Atlantic Forest", `6` = "Pampa")
+# Biome codes of 'projects/mapbiomas-workspace/AUXILIAR/biomas-2019-raster_old'
+# (IBGE 2019; band 'first'), confirmed by the authors on 28 Nov 2026 with a
+# frequencyHistogram in GEE. Used by gee/col11/isolation_forest_col11.js.
+biome_code <- c(`1` = "Amazon", `2` = "Atlantic Forest", `3` = "Pantanal",
+                `4` = "Cerrado", `5` = "Caatinga", `6` = "Pampa")
 read_isolation_col11 <- function(dir) {
   files <- list.files(dir, pattern = "\\.csv$", full.names = TRUE)
   if (length(files) == 0) return(tibble())

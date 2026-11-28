@@ -5,7 +5,7 @@ suppressMessages(library(dplyr))
 out <- commandArgs(TRUE)[1]; dir.create(out, FALSE, TRUE)
 ex <- readr::read_csv(here::here("data", "derived", "col11", "exposure_biome.csv"), show_col_types=FALSE) |>
   filter(driver=="Edge area", threshold==30, biome!="Brazil") |> distinct(biome, year, area_forest_ha)
-code <- c(Amazon=1, Caatinga=2, Pantanal=3, Cerrado=4, `Atlantic Forest`=5, Pampa=6)
+code <- c(Amazon=1, `Atlantic Forest`=2, Pantanal=3, Cerrado=4, Caatinga=5, Pampa=6)
 set.seed(1)
 for (y in 1986:2024) {
   e <- ex |> filter(year==y)
