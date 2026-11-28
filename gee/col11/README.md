@@ -54,3 +54,17 @@ Limiares adotados no Col. 11 (decisão dos autores, 27/11/2026):
 A pasta `isolation/` e a ImageCollection `forest_isolation` são criadas pelo
 próprio script ao carregar (`ensureContainer`, idempotente), antes das tasks;
 o GEE não as cria no export. No Colab isso já é feito por `ensure_container`.
+
+### Execução em 3 etapas (desde 28/11/2026)
+
+A versão de passo único estourou o limite de 12 h do GEE (Error code 3): cada task de
+tabela refazia toda a cadeia de 100 m dentro de 9 reduções nacionais a 30 m. Agora
+o script roda em 3 etapas (`CONFIG.step`):
+
+1. `forest_isolation_100m`: parte pesada a 100 m (distâncias, fragmentos-alvo,
+   distância mínima por fragmento), 1 imagem por ano.
+2. `forest_isolation`: mapas de 30 m (classes de 100 m restritas aos pixels de
+   floresta dos fragmentos-alvo), para o paper e a plataforma.
+3. CSVs de área: uma redução agrupada por ano sobre o mapa de 30 m já gravado.
+
+As etapas 2 e 3 só criam tasks para os anos cuja etapa 1 já terminou.
