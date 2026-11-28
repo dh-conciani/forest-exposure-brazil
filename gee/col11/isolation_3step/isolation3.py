@@ -24,7 +24,7 @@ import dataclasses
 import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable, Dict, List, Optional
 
 import ee
@@ -60,6 +60,8 @@ class Config:
     poll_seconds: int = 60
     max_retries: int = 2              # timeouts (Error code 3) are NOT retried
     log_file: str = "isolation3_log.jsonl"
+    lookback_hours: int = 72          # tasks older than this are ignored (resume window)
+    max_pages: int = 20               # max pages of 500 operations read per poll
 
     def combos(self):
         return [(s, t) for t in self.target_sizes for s in self.source_sizes]
@@ -281,18 +283,35 @@ _STATE = {"PENDING": "RUNNING", "READY": "RUNNING", "RUNNING": "RUNNING",
           "FAILED": "FAILED", "CANCELLED": "FAILED"}
 
 
-def operations():
-    """description -> most recent operation {'id','state','error','createTime'}."""
+def operations(since=None, max_pages=20):
+    """description -> most recent operation {'id','state','error','createTime'}.
+
+    Reads only RECENT operations (newest first, pages of 500) and stops at the first
+    page older than `since` (ISO UTC) or after `max_pages`. ee.data.listOperations()
+    would page through the whole history of a shared project (very slow).
+    """
     out = {}
-    for op in ee.data.listOperations():
-        md = op.get("metadata", {})
-        d = md.get("description")
-        if not d:
-            continue
-        rec = {"id": op["name"].split("/")[-1], "state": _STATE.get(md.get("state", ""), "RUNNING"),
-               "error": (op.get("error") or {}).get("message"), "createTime": md.get("createTime", "")}
-        if d not in out or rec["createTime"] > out[d]["createTime"]:
-            out[d] = rec
+    proj = ee.data._get_projects_path()
+    api = ee.data._get_cloud_projects()
+    req = api.operations().list(name=proj, pageSize=500)
+    pages = 0
+    while req is not None and pages < max_pages:
+        resp = ee.data._execute_cloud_call(req)
+        pages += 1
+        page = resp.get("operations", [])
+        for op in page:
+            md = op.get("metadata", {})
+            d = md.get("description")
+            if not d:
+                continue
+            rec = {"id": op["name"].split("/")[-1], "state": _STATE.get(md.get("state", ""), "RUNNING"),
+                   "error": (op.get("error") or {}).get("message"), "createTime": md.get("createTime", "")}
+            if d not in out or rec["createTime"] > out[d]["createTime"]:
+                out[d] = rec
+        times = [op.get("metadata", {}).get("createTime", "") for op in page]
+        if since and times and max(times) < since:
+            break                                   # whole page older than the window
+        req = api.operations().list_next(req, resp)
     return out
 
 
@@ -323,7 +342,9 @@ def run(cfg, years=None, dry_run=False, verbose=True):
     for c in (cfg.collection100, cfg.collection30):
         ensure_container(c)
     jobs = plan_jobs(cfg, years)
-    ops = operations()
+    since = (datetime.utcnow() - timedelta(hours=cfg.lookback_hours)).isoformat() + "Z"
+    print("reading recent tasks ...", flush=True)
+    ops = operations(since, cfg.max_pages)
     have = list_ids(cfg.collection100) | list_ids(cfg.collection30)
     for j in jobs.values():
         op = ops.get(j.key)
@@ -333,6 +354,7 @@ def run(cfg, years=None, dry_run=False, verbose=True):
             j.state, j.task_id = "RUNNING", op["id"]
         elif not j.is_asset and op and op["state"] == "COMPLETED":
             j.state = "SKIPPED"
+    print(f"{len(jobs)} jobs planned; starting up to {cfg.max_concurrent} at once", flush=True)
     if dry_run:
         print(f"{len(jobs)} jobs planned (dry run)\n" + summary(jobs))
         return jobs
@@ -342,7 +364,7 @@ def run(cfg, years=None, dry_run=False, verbose=True):
     while True:
         running = [j for j in jobs.values() if j.state == "RUNNING"]
         if running:
-            ops = operations()
+            ops = operations(since, cfg.max_pages)
             for j in running:
                 op = ops.get(j.key)
                 if not op or op["id"] != j.task_id:
