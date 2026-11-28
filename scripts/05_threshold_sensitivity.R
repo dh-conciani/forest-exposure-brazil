@@ -3,7 +3,7 @@
 #
 # Addresses:
 #   R2 9.4  How do conclusions and biome rankings change across edge distances
-#           (30-1000 m), patch sizes (3-75 ha) and isolation distances (5-20 km)?
+#           (30-1000 m), patch sizes (3-75 ha) and isolation distances (col9 5-20 km; col11 0.5-10 km)?
 #   R2 3.3 / 5.4  Isolation results under all source (100/500/1000 ha) and
 #           target (25/50/100 ha) patch-size combinations available in the GEE export.
 #   R2 5.7  Threshold-specific tables (every value linked to its threshold).

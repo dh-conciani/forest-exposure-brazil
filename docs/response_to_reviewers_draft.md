@@ -75,6 +75,19 @@ Because the GEE export contains all combinations of source size (≥ 100, 500, 1
 at ≥ 5 km in 2022 ranges from 1.8 % (sources ≥ 100 ha, targets ≤ 25 ha) to 15.0 % (sources ≥ 1,000 ha,
 targets ≤ 100 ha); the main text keeps the latter combination and states it explicitly.
 
+*Collection 11 update.* In the revised analysis (MapBiomas Collection 11, 1986–2024) isolation was
+recomputed with three changes that address R2 3.1–3.3 directly:
+(i) patch sizes come from the Degradation Module patch-size product (8-neighbour clumps, true pixel
+area in ha), so there is no 1,024-pixel limit and sources ≥ 1,000 ha are exact;
+(ii) distances from source patches are computed in an equal-area metric projection (SIRGAS 2000 /
+Brazil Polyconic, EPSG:5880) at 100 m, so a given threshold means the same distance at every latitude;
+(iii) distance classes were widened to ≥ 0.5, 1, 2, 5 and 10 km, so the response of isolation to the
+distance threshold is shown along the whole gradient (Fig. 1c, Table S6c). The main scenario remains
+sources ≥ 1,000 ha, targets ≤ 100 ha, ≥ 5 km. The forest reference area used as denominator was
+checked against the module tables (difference `<x>` %). **[PENDING: isolation CSVs from GEE]**
+Atlantic Forest exposure at ≥ 5 km in 2024 is `<x>` % (Collection 9, 2022: 15.0 %); Table S10
+compares both collections for every driver.
+
 > *R2 3.4: Fire frequency …*
 
 Fire frequency is the number of years a pixel burned between 1985 and year *t*, restricted to pixels

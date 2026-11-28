@@ -40,8 +40,10 @@ if (CFG$collection == "col9") {
   edge  <- read_mb_xlsx(f("edges")) |> exposure_from_long("edge_size", "Edge area")
   patch <- read_mb_xlsx(f("patch")) |> exposure_from_long("patch_size", "Small-sized patches")
   fire  <- read_mb_xlsx(f("fire"))  |> exposure_fire(k_max = 10)
-  # Isolation is not part of the 11.1a tables: produced by
-  # the Colab pipeline gee/col11/isolation_pipeline/ and read here once the CSVs exist.
+  # Isolation is not part of the 11.1a tables: produced in GEE by
+  # gee/col11/isolation_forest_col11.js (long CSV, one per year) or the Colab pipeline
+  # (wide CSV); both read from data/raw/col11/isolation/. Thresholds in km
+  # (0.5, 1, 2, 5, 10; main scenario >= 5 km, source >= 1000 ha, target <= 100 ha).
   iso_all <- read_isolation_col11(path_raw("col11", "isolation"))
 }
 edge  <- edge  |> filter(threshold %in% CFG$edge_thresholds)
@@ -55,13 +57,25 @@ exposure <- bind_rows(edge, patch, isolation, fire) |> add_brazil() |>
   arrange(driver, biome, threshold, year)
 write_csv(exposure, path_derived("exposure_biome.csv"))
 
+# Col. 11 QA: the isolation denominator (forest area of LULC Col. 11 computed in GEE,
+# dist_class 0) should match the forest area of the module tables (edge table).
+# Differences > 1% are flagged; pct_exposed always uses the driver's own denominator.
+if (CFG$collection == "col11" && nrow(iso_all) > 0) {
+  qa <- iso_all |> ungroup() |> distinct(biome, year, forest_isolation_ha = area_forest_ha) |>
+    inner_join(edge |> ungroup() |> distinct(biome, year, forest_module_ha = area_forest_ha), by = c("biome", "year")) |>
+    mutate(diff_pct = 100 * (forest_isolation_ha / forest_module_ha - 1))
+  write_csv(qa, path_derived("qa_isolation_denominator.csv"))
+  if (any(abs(qa$diff_pct) > 1)) warning("Isolation forest area differs > 1% from the module tables: ",
+    paste(unique(qa$biome[abs(qa$diff_pct) > 1]), collapse = ", "), " (see qa_isolation_denominator.csv)")
+}
+
 # Isolation: all source/target combinations, for sensitivity analyses (R2 3.3, 5.4, 9.4)
 if (nrow(iso_all) > 0) {
   iso_sens <- iso_all |> group_by(target_ha, source_ha) |>
     group_modify(~ add_brazil(.x)) |> ungroup()
   write_csv(iso_sens, path_derived("exposure_isolation_all_params.csv"))
 } else {
-  message("Habitat isolation not available for ", CFG$collection, " - run gee/col11/isolation_pipeline/run_isolation_col11_colab.ipynb")
+  message("Habitat isolation not available for ", CFG$collection, " - put the GEE CSVs (gee/col11/isolation_forest_col11.js) in data/raw/col11/isolation/")
   unlink(path_derived("exposure_isolation_all_params.csv"))
 }
 

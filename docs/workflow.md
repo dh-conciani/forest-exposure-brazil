@@ -20,7 +20,7 @@ flowchart TD
   subgraph DRV[Driver rasters in GEE]
     C1[Edge area<br/>Euclidean distance to anthropogenic<br/>d = 30...1000 m, 30 m grid]
     C2[Small-sized patches<br/>connectedPixelCount 8-neighbour<br/>3...75 ha, 30 m grid]
-    C3[Habitat isolation<br/>100 m grid, sources >=100/500/1000 ha<br/>targets <=25/50/100 ha, 5/10/20 km]
+    C3[Habitat isolation<br/>100 m grid, sources >=100/500/1000 ha<br/>targets <=25/50/100 ha<br/>col9: 5/10/20 km; col11: 0.5/1/2/5/10 km]
     C4[Fire frequency<br/>sum of annual burned maps 1985..t]
   end
 
