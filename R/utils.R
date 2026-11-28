@@ -66,6 +66,9 @@ CFG <- c(CFG_BY_COLLECTION[[COLLECTION]], list(
   driver_order = c("Edge area", "Small-sized patches", "Habitat isolation", "Fire frequency")
 ))
 
+# Module/statistics tables (csv/xlsx): biome taken from the LABEL in column NAME,
+# never from a numeric code. Numeric codes (`biome_code`, below) are used ONLY for
+# the isolation CSVs exported from GEE. Both are joined by biome name.
 biome_en <- c("Amazônia" = "Amazon", "Caatinga" = "Caatinga", "Cerrado" = "Cerrado",
               "Mata Atlântica" = "Atlantic Forest", "Pampa" = "Pampa", "Pantanal" = "Pantanal")
 
